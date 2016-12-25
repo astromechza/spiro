@@ -1,0 +1,4 @@
+/go-cli-template
+/.vscode
+/build/*
+/*.tgz
