@@ -83,12 +83,30 @@ def main():
     ```
     $ git clone https://github.com/AstromechZA/go-cli-template.git
     ```
+
+    2. Rename all references to `go-cli-template` and the project url
+
+    3. Tweak the git repo
+
+    You can either delete the `.git` directory and re-run `git init` or you can
+    just change the push/pull remotes and continue from there.
     """)
 
-    g.h3("Building the application")
+    g.h3("Using the `vendor` folder and Godeps")
+    g.paragraph("""\
+    Usually you would just clone the dependency into your `vendor` directory 
+    and commit that to master. The alternative is to use Godeps to anchor the 
+    dependency versions and ignore the `vendor` directory.
+    """)
+
+    g.h3("Building your project")
+    g.command_example("go build -v github.com/AstromechZA/go-cli-template")
+
+    g.h3("Official Builds")
     g.paragraph("""\
     The provided `make_official.sh` script will build official builds for both Linux and OSX with an official version
-    number baked in.
+    number baked in. It also compresses a `tgz` archive containing the built binaries for upload to Github or
+    whatever release mechanism is being used.
     """)
     g.command_example("./make_official.sh")
 
