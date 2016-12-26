@@ -86,6 +86,15 @@ def main():
 
     2. Rename all references to `go-cli-template` and the project url
 
+    There is a provided script `rename_everything.py` that will run through the relevant files and rename the 
+    references to the project name and import path. You will still need to rename the directory structure yourself.
+
+    ```
+    $ ./rename_everything.py github.com/myuser/myrepo
+    ```
+
+    The script will also delete itself after being run.
+
     3. Tweak the git repo
 
     You can either delete the `.git` directory and re-run `git init` or you can

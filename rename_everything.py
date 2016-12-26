@@ -34,5 +34,7 @@ def main():
             with open(path, 'w') as f:
                 f.write(content)
 
+    os.remove(__file__)
+
 if __name__ == '__main__':
     main()

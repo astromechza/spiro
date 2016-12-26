@@ -7,7 +7,7 @@ automation that I have found useful while building simple CLI-based applications
 
 ```
 $ ./go-cli-template -version
-Version: 0.1 (commit 0e85803 @ 2016-12-26)
+Version: 0.1 (commit 7001c64 @ 2016-12-26)
 
  _        _______  _______  _______ 
 ( \      (  ___  )(  ____ \(  ___  )
@@ -40,6 +40,15 @@ $ git clone https://github.com/AstromechZA/go-cli-template.git
 
 2. Rename all references to `go-cli-template` and the project url
 
+There is a provided script `rename_everything.py` that will run through the relevant files and rename the 
+references to the project name and import path. You will still need to rename the directory structure yourself.
+
+```
+$ ./rename_everything.py github.com/myuser/myrepo
+```
+
+The script will also delete itself after being run.
+
 3. Tweak the git repo
 
 You can either delete the `.git` directory and re-run `git init` or you can
@@ -66,21 +75,21 @@ whatever release mechanism is being used.
 
 ```
 $ ./make_official.sh
-Building official darwin amd64 binary for version '0.1 (commit 0e85803 @ 2016-12-26)'
+Building official darwin amd64 binary for version '0.1 (commit 7001c64 @ 2016-12-26)'
 Output Folder build/darwin_amd64
 github.com/AstromechZA/go-cli-template
 Done
--rwxr-xr-x  1 benmeier  staff   1.8M Dec 26 09:32 build/darwin_amd64/go-cli-template
+-rwxr-xr-x  1 benmeier  staff   1.8M Dec 26 10:41 build/darwin_amd64/go-cli-template
 build/darwin_amd64/go-cli-template: Mach-O 64-bit executable x86_64
 
-Building official linux amd64 binary for version '0.1 (commit 0e85803 @ 2016-12-26)'
+Building official linux amd64 binary for version '0.1 (commit 7001c64 @ 2016-12-26)'
 Output Folder build/linux_amd64
 github.com/AstromechZA/go-cli-template
 Done
--rwxr-xr-x  1 benmeier  staff   1.9M Dec 26 09:32 build/linux_amd64/go-cli-template
+-rwxr-xr-x  1 benmeier  staff   1.9M Dec 26 10:41 build/linux_amd64/go-cli-template
 build/linux_amd64/go-cli-template: ELF 64-bit LSB executable, x86-64, version 1 (SYSV), statically linked, not stripped
 
--rw-r--r--  1 benmeier  staff   1.3M Dec 26 09:32 go-cli-template-0.1.tgz
-go-cli-template-0.1.tgz: gzip compressed data, from Unix, last modified: Mon Dec 26 09:32:49 2016
+-rw-r--r--  1 benmeier  staff   1.3M Dec 26 10:41 go-cli-template-0.1.tgz
+go-cli-template-0.1.tgz: gzip compressed data, from Unix, last modified: Mon Dec 26 10:41:32 2016
 ```
 
