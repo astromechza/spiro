@@ -7,7 +7,7 @@ automation that I have found useful while building simple CLI-based applications
 
 ```
 $ ./go-cli-template -version
-Version: 0.1 (commit cb39180 @ 2016-12-25)
+Version: 0.1 (commit 0e85803 @ 2016-12-26)
 
  _        _______  _______  _______ 
 ( \      (  ___  )(  ____ \(  ___  )
@@ -54,8 +54,8 @@ dependency versions and ignore the `vendor` directory.
 ### Building your project
 
 ```
-$ go build github.com/AstromechZA/go-cli-template
-
+$ go build -v github.com/AstromechZA/go-cli-template
+github.com/AstromechZA/go-cli-template
 ```
 
 ### Official Builds
@@ -66,21 +66,21 @@ whatever release mechanism is being used.
 
 ```
 $ ./make_official.sh
-Building official darwin amd64 binary for version '0.1 (commit 421355f @ 2016-12-25)'
+Building official darwin amd64 binary for version '0.1 (commit 0e85803 @ 2016-12-26)'
 Output Folder build/darwin_amd64
 github.com/AstromechZA/go-cli-template
 Done
--rwxr-xr-x  1 benmeier  staff   2.5M Dec 26 09:17 build/darwin_amd64/go-cli-template
+-rwxr-xr-x  1 benmeier  staff   1.8M Dec 26 09:32 build/darwin_amd64/go-cli-template
 build/darwin_amd64/go-cli-template: Mach-O 64-bit executable x86_64
 
-Building official linux amd64 binary for version '0.1 (commit 421355f @ 2016-12-25)'
+Building official linux amd64 binary for version '0.1 (commit 0e85803 @ 2016-12-26)'
 Output Folder build/linux_amd64
 github.com/AstromechZA/go-cli-template
 Done
--rwxr-xr-x  1 benmeier  staff   2.5M Dec 26 09:17 build/linux_amd64/go-cli-template
+-rwxr-xr-x  1 benmeier  staff   1.9M Dec 26 09:32 build/linux_amd64/go-cli-template
 build/linux_amd64/go-cli-template: ELF 64-bit LSB executable, x86-64, version 1 (SYSV), statically linked, not stripped
 
--rw-r--r--  1 benmeier  staff   1.5M Dec 26 09:17 go-cli-template-0.1.tgz
-go-cli-template-0.1.tgz: gzip compressed data, from Unix, last modified: Mon Dec 26 09:17:31 2016
+-rw-r--r--  1 benmeier  staff   1.3M Dec 26 09:32 go-cli-template-0.1.tgz
+go-cli-template-0.1.tgz: gzip compressed data, from Unix, last modified: Mon Dec 26 09:32:49 2016
 ```
 
