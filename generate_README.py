@@ -101,11 +101,26 @@ def main():
     just change the push/pull remotes and continue from there.
     """)
 
-    g.h3("Using the `vendor` folder and Godeps")
+    g.h3("Using the `vendor` folder and govendor")
     g.paragraph("""\
-    Usually you would just clone the dependency into your `vendor` directory 
-    and commit that to master. The alternative is to use Godeps to anchor the 
-    dependency versions and ignore the `vendor` directory.
+    The `vendor.json` file in the vendor folder holds a anchored list of the project dependencies. This file and the
+    vendor folder are managed by the `govendor` tool. 
+
+    Install it using:
+
+    ```
+    $ go get -u github.com/kardianos/govendor
+    ```
+
+    And pull all the dependencies using:
+
+    ```
+    $ govendor sync
+    ```
+
+    (You might need to add $GOPATH/bin to your $PATH in order to run it)
+
+    New dependencies can be added using `govendor fetch ...`.
     """)
 
     g.h3("Building your project")
@@ -118,6 +133,18 @@ def main():
     whatever release mechanism is being used.
     """)
     g.command_example("./make_official.sh")
+
+    g.h3("Official Releases")
+    g.paragraph("""\
+    When releasing a new version to github or something do the following:
+
+    1. change the version number in `make_official.sh`
+    2. run `make_official.sh` and ensure it succeeds
+    3. run `generate_README.md > README.md` to reflect the new version number
+    4. commit the changed readme and version number in git
+    5. tag the commit with the same version number
+    6. push everything to origin and upload the `tgz` file
+    """)
 
     print str(g)
 
