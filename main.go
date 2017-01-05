@@ -29,10 +29,12 @@ const logoImage = `
 (_______/(_______)(_______)(_______)
 `
 
-// VersionString is the version string inserted by whatever build script
-// format should be 'X.YZ'
-// Set this at build time using the -ldflags="-X main.VersionString=X.YZ"
-var VersionString = "<unofficial build>"
+// These variables are filled by the `govvv` tool at compile time.
+// There are a few more granular variables available if necessary.
+var Version = "<unofficial build>"
+var GitSummary = "<changes unknown>"
+var BuildDate = "<no date>"
+
 
 func mainInner() error {
 
@@ -49,7 +51,7 @@ func mainInner() error {
 
 	// do arg checking
 	if *versionFlag {
-		fmt.Println("Version: " + VersionString)
+		fmt.Printf("Version: %s (%s) on %s \n", Version, GitSummary, BuildDate)
 		fmt.Println(logoImage)
 		fmt.Println("Project: <project url here>")
 		return nil

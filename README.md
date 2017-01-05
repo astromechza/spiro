@@ -38,6 +38,14 @@ when the usage information is printed out.
 $ git clone https://github.com/AstromechZA/go-cli-template.git
 ```
 
+2. Install Golang tools and dependencies
+
+```
+$ go get github.com/ahmetalpbalkan/govvv
+$ go get github.com/kardianos/govendor
+$ govendor sync
+```
+
 2. Rename all references to `go-cli-template` and the project url
 
 There is a provided script `rename_everything.py` that will run through the relevant files and rename the 
