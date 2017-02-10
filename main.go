@@ -1,40 +1,142 @@
 package main
 
 import (
+	"bytes"
+	"encoding/json"
 	"flag"
 	"fmt"
+	"html/template"
+	"io"
+	"io/ioutil"
 	"os"
+	"path"
 	"strings"
 )
 
-// Usage string printed as part of the -help text. Keep the width below 80 characters to facilitate terminal
-// printing.
 const usageString = `
 A detailed description of the project that will be inserted above the help text 
 when the usage information is printed out.
+
+$ spiro [options] {input template} {spec file} {output directory}
 `
 
-// I like putting logo's in the -version information as a bit of a easter egg/signature. Remove if not required.
-// Sources for logos:
-// http://www.chris.com/ascii/
-// http://www.ascii-code.com/ascii-art/
 const logoImage = `
- _        _______  _______  _______ 
-( \      (  ___  )(  ____ \(  ___  )
-| (      | (   ) || (    \/| (   ) |
-| |      | |   | || |      | |   | |
-| |      | |   | || | ____ | |   | |
-| |      | |   | || | \_  )| |   | |
-| (____/\| (___) || (___) || (___) |
-(_______/(_______)(_______)(_______)
+  _________      .__               
+ /   _____/_____ |__|______  ____  
+ \_____  \\____ \|  \_  __ \/  _ \ 
+ /        \  |_> >  ||  | \(  <_> )
+/_______  /   __/|__||__|   \____/ 
+        \/|__|               
 `
 
-// These variables are filled by the `govvv` tool at compile time.
-// There are a few more granular variables available if necessary.
 var Version = "<unofficial build>"
 var GitSummary = "<changes unknown>"
 var BuildDate = "<no date>"
 
+func copyFileContents(src, dst string) error {
+	in, err := os.Open(src)
+	if err != nil {
+		return err
+	}
+	defer in.Close()
+	out, err := os.Create(dst)
+	if err != nil {
+		return err
+	}
+	defer func() {
+		cerr := out.Close()
+		if err == nil {
+			err = cerr
+		}
+	}()
+	if _, err = io.Copy(out, in); err != nil {
+		return err
+	}
+	return out.Sync()
+}
+
+func doTemplate(templateString string, spec *map[string]interface{}) (string, error) {
+	if t, err := template.New("").Parse(templateString); err != nil {
+		return "", err
+	} else {
+		var buf bytes.Buffer
+		err := t.Execute(&buf, spec)
+		return buf.String(), err
+	}
+}
+
+func isTemplatedName(name string) bool {
+	return strings.Contains(name, "{{") && strings.Contains(name, "}}")
+}
+
+func isTemplatedFile(name string) bool {
+	return strings.HasSuffix(name, ".templated")
+}
+
+func processDir(templateString string, spec *map[string]interface{}, outputDir string) error {
+	base := path.Base(templateString)
+	if isTemplatedName(base) {
+		var err error
+		base, err = doTemplate(base, spec)
+		if err != nil {
+			return fmt.Errorf("Error while processing '%s': %s", templateString, err.Error())
+		}
+	}
+
+	newOutputDir := path.Join(outputDir, base)
+	if err := os.Mkdir(newOutputDir, 0755); err != nil && !os.IsExist(err) {
+		return fmt.Errorf("Error while processing '%s': %s", templateString, err.Error())
+	}
+
+	items, _ := ioutil.ReadDir(templateString)
+	for _, item := range items {
+		if err := process(path.Join(templateString, item.Name()), spec, newOutputDir); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func processFile(templateString string, spec *map[string]interface{}, outputDir string) error {
+	fromBase := path.Base(templateString)
+	toBase := fromBase
+	if isTemplatedName(fromBase) {
+		var err error
+		toBase, err = doTemplate(fromBase, spec)
+		if err != nil {
+			return fmt.Errorf("Error while processing '%s': %s", templateString, err.Error())
+		}
+	}
+
+	if isTemplatedFile(toBase) {
+		inputBytes, err := ioutil.ReadFile(templateString)
+		if err != nil {
+			return fmt.Errorf("Error while processing '%s': %s", templateString, err.Error())
+		}
+		outputBytes, err := doTemplate(string(inputBytes), spec)
+		if err != nil {
+			return fmt.Errorf("Error while processing '%s': %s", templateString, err.Error())
+		}
+		if err := ioutil.WriteFile(path.Join(outputDir, toBase), []byte(outputBytes), 0644); err != nil {
+			return fmt.Errorf("Error while processing '%s': %s", templateString, err.Error())
+		}
+	} else {
+		return copyFileContents(templateString, path.Join(outputDir, toBase))
+	}
+	return nil
+}
+
+func process(templateString string, spec *map[string]interface{}, outputDir string) error {
+	stat, err := os.Stat(templateString)
+	if err != nil {
+		return fmt.Errorf("Error processing template %s: %s", templateString, err.Error())
+	}
+	if stat.IsDir() {
+		return processDir(templateString, spec, outputDir)
+	} else {
+		return processFile(templateString, spec, outputDir)
+	}
+}
 
 func mainInner() error {
 
@@ -56,10 +158,49 @@ func mainInner() error {
 		fmt.Println("Project: <project url here>")
 		return nil
 	}
+	if flag.NArg() != 3 {
+		flag.Usage()
+		os.Exit(1)
+	}
 
-	fmt.Println("Hello World")
+	inputTemplate := flag.Arg(0)
+	specFile := flag.Arg(1)
+	outputDirectory := flag.Arg(2)
 
-	return nil
+	if _, err := os.Stat(inputTemplate); err != nil {
+		if os.IsNotExist(err) {
+			return fmt.Errorf("Input template '%s' does not exist!", inputTemplate)
+		}
+		return fmt.Errorf("Input template '%s' cannot be read! (%s)", inputTemplate, err.Error())
+	}
+	if stat, err := os.Stat(specFile); err != nil {
+		if os.IsNotExist(err) {
+			return fmt.Errorf("Spec file '%s' does not exist!", specFile)
+		}
+		return fmt.Errorf("Spec file '%s' cannot be read! (%s)", specFile, err.Error())
+	} else if stat.IsDir() {
+		return fmt.Errorf("Spec file '%s' cannot be a directory!", specFile)
+	}
+	if stat, err := os.Stat(outputDirectory); err != nil {
+		if os.IsNotExist(err) {
+			return fmt.Errorf("Output directory '%s' does not exist!", outputDirectory)
+		}
+		return fmt.Errorf("Output directory '%s' cannot be read! (%s)", outputDirectory, err.Error())
+	} else if !stat.IsDir() {
+		return fmt.Errorf("Output directory '%s' cannot be a file!", specFile)
+	}
+
+	specBytes, err := ioutil.ReadFile(specFile)
+	if err != nil {
+		return fmt.Errorf("Could not read json spec file: %s", err.Error())
+	}
+	var spec map[string]interface{}
+	err = json.Unmarshal(specBytes, &spec)
+	if err != nil {
+		return fmt.Errorf("Could not parse json spec file: %s", err.Error())
+	}
+
+	return process(inputTemplate, &spec, outputDirectory)
 }
 
 func main() {

@@ -3,8 +3,9 @@
 set -e
 
 # change these!
-GO_PROJECT=github.com/AstromechZA/go-cli-template
-BINARY_NAME=go-cli-template
+GO_PROJECT=github.com/AstromechZA/spiro
+BINARY_NAME=spiro
+VERSION_NUM=$(cat VERSION)
 
 function buildbinary {
     goos=$1
