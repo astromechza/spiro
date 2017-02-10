@@ -46,6 +46,13 @@ demo/project/{{.subdir}}-thing/noop
 demo/project/{{.subdir}}-thing/{{.subfile.name}}.{{.subfile.type}}
 ```
 
+## Download
+
+The best option is to download the latest binaries from the [releases page](https://github.com/AstromechZA/spiro/releases).
+Extract the one for your platform and put it in any directory where you have access.
+
+If a binary is not available for your platform, you'll need to build one yourself.
+
 ## Development
 
 This project uses only one development time dependency:
