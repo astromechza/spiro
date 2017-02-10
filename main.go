@@ -11,6 +11,7 @@ import (
 	"os"
 	"path"
 	"strings"
+	"time"
 )
 
 const usageString = `
@@ -55,8 +56,9 @@ func copyFileContents(src, dst string) error {
 	return out.Sync()
 }
 
-func doTemplate(templateString string, spec *map[string]interface{}) (string, error) {
-	if t, err := template.New("").Parse(templateString); err != nil {
+func doTemplate(templateString string, spec *map[string]interface{}, funcMap *template.FuncMap) (string, error) {
+	t := template.New("").Option("missingkey=error").Funcs(*funcMap)
+	if t, err := t.Parse(templateString); err != nil {
 		return "", err
 	} else {
 		var buf bytes.Buffer
@@ -73,47 +75,49 @@ func isTemplatedFile(name string) bool {
 	return strings.HasSuffix(name, ".templated")
 }
 
-func processDir(templateString string, spec *map[string]interface{}, outputDir string) error {
+func processDir(templateString string, spec *map[string]interface{}, outputDir string, funcMap *template.FuncMap) error {
 	base := path.Base(templateString)
 	if isTemplatedName(base) {
 		var err error
-		base, err = doTemplate(base, spec)
+		base, err = doTemplate(base, spec, funcMap)
 		if err != nil {
 			return fmt.Errorf("Error while processing '%s': %s", templateString, err.Error())
 		}
 	}
 
 	newOutputDir := path.Join(outputDir, base)
+	fmt.Printf("Processing '%s/' -> '%s/'\n", templateString, newOutputDir)
 	if err := os.Mkdir(newOutputDir, 0755); err != nil && !os.IsExist(err) {
 		return fmt.Errorf("Error while processing '%s': %s", templateString, err.Error())
 	}
 
 	items, _ := ioutil.ReadDir(templateString)
 	for _, item := range items {
-		if err := process(path.Join(templateString, item.Name()), spec, newOutputDir); err != nil {
+		if err := process(path.Join(templateString, item.Name()), spec, newOutputDir, funcMap); err != nil {
 			return err
 		}
 	}
 	return nil
 }
 
-func processFile(templateString string, spec *map[string]interface{}, outputDir string) error {
+func processFile(templateString string, spec *map[string]interface{}, outputDir string, funcMap *template.FuncMap) error {
 	fromBase := path.Base(templateString)
 	toBase := fromBase
 	if isTemplatedName(fromBase) {
 		var err error
-		toBase, err = doTemplate(fromBase, spec)
+		toBase, err = doTemplate(fromBase, spec, funcMap)
 		if err != nil {
 			return fmt.Errorf("Error while processing '%s': %s", templateString, err.Error())
 		}
 	}
 
+	fmt.Printf("Processing '%s' -> '%s'\n", templateString, path.Join(outputDir, toBase))
 	if isTemplatedFile(toBase) {
 		inputBytes, err := ioutil.ReadFile(templateString)
 		if err != nil {
 			return fmt.Errorf("Error while processing '%s': %s", templateString, err.Error())
 		}
-		outputBytes, err := doTemplate(string(inputBytes), spec)
+		outputBytes, err := doTemplate(string(inputBytes), spec, funcMap)
 		if err != nil {
 			return fmt.Errorf("Error while processing '%s': %s", templateString, err.Error())
 		}
@@ -126,16 +130,30 @@ func processFile(templateString string, spec *map[string]interface{}, outputDir 
 	return nil
 }
 
-func process(templateString string, spec *map[string]interface{}, outputDir string) error {
+func process(templateString string, spec *map[string]interface{}, outputDir string, funcMap *template.FuncMap) error {
 	stat, err := os.Stat(templateString)
 	if err != nil {
 		return fmt.Errorf("Error processing template %s: %s", templateString, err.Error())
 	}
 	if stat.IsDir() {
-		return processDir(templateString, spec, outputDir)
+		return processDir(templateString, spec, outputDir, funcMap)
 	} else {
-		return processFile(templateString, spec, outputDir)
+		return processFile(templateString, spec, outputDir, funcMap)
 	}
+}
+
+func tfNow() time.Time {
+	return time.Now()
+}
+
+func getFuncMap() *template.FuncMap {
+	tm := template.FuncMap{
+		"title": strings.Title,
+		"lower": strings.ToLower,
+		"upper": strings.ToUpper,
+		"now":   tfNow,
+	}
+	return &tm
 }
 
 func mainInner() error {
@@ -200,7 +218,7 @@ func mainInner() error {
 		return fmt.Errorf("Could not parse json spec file: %s", err.Error())
 	}
 
-	return process(inputTemplate, &spec, outputDirectory)
+	return process(inputTemplate, &spec, outputDirectory, getFuncMap())
 }
 
 func main() {
