@@ -5,18 +5,32 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
-	"html/template"
 	"io"
 	"io/ioutil"
 	"os"
 	"path"
 	"strings"
+	"text/template"
 	"time"
 )
 
 const usageString = `
-A detailed description of the project that will be inserted above the help text 
-when the usage information is printed out.
+Spiro is an template structure generator that uses Golangs text/template library. It accepts both single files as well 
+as directory trees as input and will interpret any template calls found inside the files and the file/directory names.
+
+The rule-set is probably a bit complex to display here, but the following links are useful:
+
+- https://golang.org/pkg/text/template
+- https://gohugo.io/templates/go-templates/
+
+Some additional template functions are supplied:
+
+- 'title': capitalise string
+- 'upper': convert string to upper case 
+- 'lower': convert string to lower case
+- 'now': return current time object (time.Time)
+
+The spec file should be in JSON form and will be passed to each template invocation.
 
 $ spiro [options] {input template} {spec file} {output directory}
 `
@@ -173,7 +187,7 @@ func mainInner() error {
 	if *versionFlag {
 		fmt.Printf("Version: %s (%s) on %s \n", Version, GitSummary, BuildDate)
 		fmt.Println(logoImage)
-		fmt.Println("Project: <project url here>")
+		fmt.Println("Project: github.com/AstromechZA/spiro")
 		return nil
 	}
 	if flag.NArg() != 3 {
