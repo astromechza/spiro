@@ -125,8 +125,9 @@ func processFile(templateString string, spec *map[string]interface{}, outputDir 
 		}
 	}
 
-	fmt.Printf("Processing '%s' -> '%s'\n", templateString, path.Join(outputDir, toBase))
 	if isTemplatedFile(toBase) {
+		toBase = toBase[:len(toBase)-10]
+		fmt.Printf("Processing '%s' -> '%s'\n", templateString, path.Join(outputDir, toBase))
 		inputBytes, err := ioutil.ReadFile(templateString)
 		if err != nil {
 			return fmt.Errorf("Error while processing '%s': %s", templateString, err.Error())
@@ -139,6 +140,7 @@ func processFile(templateString string, spec *map[string]interface{}, outputDir 
 			return fmt.Errorf("Error while processing '%s': %s", templateString, err.Error())
 		}
 	} else {
+		fmt.Printf("Processing '%s' -> '%s'\n", templateString, path.Join(outputDir, toBase))
 		return copyFileContents(templateString, path.Join(outputDir, toBase))
 	}
 	return nil
