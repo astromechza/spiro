@@ -20,6 +20,10 @@ The spec file should be in JSON form and will be passed to each template invocat
 **Important**: the contents of a file will only be treated as templated if the file name has a `.templated` suffix. If 
 it does, the contents will be evaluated and the `.templated` suffix will be removed.
 
+#### What should you use this for:
+
+- Does your team have a template project that gets copied and modified by hand? Why not use this!
+
 ## Demo
 
 A demo exists in the `/demo` directory. Run it as follows:
