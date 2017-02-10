@@ -45,7 +45,8 @@ const logoImage = `
 `
 
 var Version = "<unofficial build>"
-var GitSummary = "<changes unknown>"
+var GitCommit = "<commit unknown>"
+var GitState = "<changes unknown>"
 var BuildDate = "<no date>"
 
 func copyFileContents(src, dst string) error {
@@ -187,7 +188,7 @@ func mainInner() error {
 
 	// do arg checking
 	if *versionFlag {
-		fmt.Printf("Version: %s (%s) on %s \n", Version, GitSummary, BuildDate)
+		fmt.Printf("Version: %s (%s-%s) on %s \n", Version, GitCommit, GitState, BuildDate)
 		fmt.Println(logoImage)
 		fmt.Println("Project: github.com/AstromechZA/spiro")
 		return nil
