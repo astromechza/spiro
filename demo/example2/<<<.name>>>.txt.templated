@@ -1,0 +1,9 @@
+This is a demonstration of custom delimeters in the spec file.
+
+The content below should not have changed:
+
+{{.thing}} {{ now }} {{ bob }}
+
+But this should:
+
+`<<<.name>>>`

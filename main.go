@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bytes"
 	"encoding/json"
 	"flag"
 	"fmt"
@@ -10,10 +9,11 @@ import (
 	"os"
 	"path"
 	"strings"
-	"text/template"
 	"time"
 
 	"gopkg.in/yaml.v2"
+
+	"github.com/AstromechZA/spiro/templatefactory"
 )
 
 const usageString = `
@@ -32,7 +32,9 @@ Some additional template functions are supplied:
 - 'lower': convert string to lower case
 - 'now': return current time object (time.Time)
 
-The spec file should be in JSON form and will be passed to each template invocation.
+See the project homepage for more documentation: https://github.com/AstromechZA/spiro
+
+The spec file should be in JSON or Yaml form and will be passed to each template invocation.
 
 $ spiro [options] {input template} {spec file} {output directory}
 `
@@ -73,31 +75,12 @@ func copyFileContents(src, dst string) error {
 	return out.Sync()
 }
 
-func doTemplate(templateString string, spec *map[string]interface{}, funcMap *template.FuncMap) (string, error) {
-	t := template.New("").Option("missingkey=error").Funcs(*funcMap)
-	if t, err := t.Parse(templateString); err != nil {
-		return "", err
-	} else {
-		var buf bytes.Buffer
-		err := t.Execute(&buf, spec)
-		return buf.String(), err
-	}
-}
-
-func isTemplatedName(name string) bool {
-	return strings.Contains(name, "{{") && strings.Contains(name, "}}")
-}
-
-func isTemplatedFile(name string) bool {
-	return strings.HasSuffix(name, ".templated")
-}
-
-func processDir(templateString string, spec *map[string]interface{}, outputDir string, funcMap *template.FuncMap) error {
+func processDir(templateString string, spec *map[string]interface{}, outputDir string, tf *templatefactory.TemplateFactory) error {
 	fromBase := path.Base(templateString)
 	toBase := fromBase
-	if isTemplatedName(fromBase) {
+	if tf.StringContainsTemplating(fromBase) {
 		var err error
-		toBase, err = doTemplate(fromBase, spec, funcMap)
+		toBase, err = tf.Render(fromBase)
 		if err != nil {
 			return fmt.Errorf("Error while processing '%s': %s", templateString, err.Error())
 		}
@@ -116,19 +99,19 @@ func processDir(templateString string, spec *map[string]interface{}, outputDir s
 
 	items, _ := ioutil.ReadDir(templateString)
 	for _, item := range items {
-		if err := process(path.Join(templateString, item.Name()), spec, newOutputDir, funcMap); err != nil {
+		if err := process(path.Join(templateString, item.Name()), spec, newOutputDir, tf); err != nil {
 			return err
 		}
 	}
 	return nil
 }
 
-func processFile(templateString string, spec *map[string]interface{}, outputDir string, funcMap *template.FuncMap) error {
+func processFile(templateString string, spec *map[string]interface{}, outputDir string, tf *templatefactory.TemplateFactory) error {
 	fromBase := path.Base(templateString)
 	toBase := fromBase
-	if isTemplatedName(fromBase) {
+	if tf.StringContainsTemplating(fromBase) {
 		var err error
-		toBase, err = doTemplate(fromBase, spec, funcMap)
+		toBase, err = tf.Render(fromBase)
 		if err != nil {
 			return fmt.Errorf("Error while processing '%s': %s", templateString, err.Error())
 		}
@@ -139,7 +122,7 @@ func processFile(templateString string, spec *map[string]interface{}, outputDir 
 		return nil
 	}
 
-	if isTemplatedFile(toBase) {
+	if strings.HasSuffix(toBase, ".templated") {
 		toBase = toBase[:len(toBase)-10]
 		if len(toBase) == 0 {
 			fmt.Printf("Skipping '%s' since the name evaluated to ''\n", templateString)
@@ -150,7 +133,7 @@ func processFile(templateString string, spec *map[string]interface{}, outputDir 
 		if err != nil {
 			return fmt.Errorf("Error while processing '%s': %s", templateString, err.Error())
 		}
-		outputBytes, err := doTemplate(string(inputBytes), spec, funcMap)
+		outputBytes, err := tf.Render(string(inputBytes))
 		if err != nil {
 			return fmt.Errorf("Error while processing '%s': %s", templateString, err.Error())
 		}
@@ -164,30 +147,15 @@ func processFile(templateString string, spec *map[string]interface{}, outputDir 
 	return nil
 }
 
-func process(templateString string, spec *map[string]interface{}, outputDir string, funcMap *template.FuncMap) error {
+func process(templateString string, spec *map[string]interface{}, outputDir string, tf *templatefactory.TemplateFactory) error {
 	stat, err := os.Stat(templateString)
 	if err != nil {
 		return fmt.Errorf("Error processing template %s: %s", templateString, err.Error())
 	}
 	if stat.IsDir() {
-		return processDir(templateString, spec, outputDir, funcMap)
-	} else {
-		return processFile(templateString, spec, outputDir, funcMap)
+		return processDir(templateString, spec, outputDir, tf)
 	}
-}
-
-func tfNow() time.Time {
-	return time.Now()
-}
-
-func getFuncMap() *template.FuncMap {
-	tm := template.FuncMap{
-		"title": strings.Title,
-		"lower": strings.ToLower,
-		"upper": strings.ToUpper,
-		"now":   tfNow,
-	}
-	return &tm
+	return processFile(templateString, spec, outputDir, tf)
 }
 
 func readSpec(specFile string) (*map[string]interface{}, error) {
@@ -268,7 +236,15 @@ func mainInner() error {
 	if spec, err := readSpec(specFile); err != nil {
 		return err
 	} else {
-		return process(inputTemplate, spec, outputDirectory, getFuncMap())
+		tf := templatefactory.NewTemplateFactory()
+		if err := tf.SetSpec(spec); err != nil {
+			return err
+		}
+		tf.RegisterTemplateFunction("title", strings.Title)
+		tf.RegisterTemplateFunction("lower", strings.ToLower)
+		tf.RegisterTemplateFunction("upper", strings.ToUpper)
+		tf.RegisterTemplateFunction("now", time.Now)
+		return process(inputTemplate, spec, outputDirectory, tf)
 	}
 }
 

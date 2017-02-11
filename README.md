@@ -55,7 +55,20 @@ You'll end up with a file called `helloworld.md` containing:
 This project was started on 2017-02-11 by Joe Soap.
 ```
 
-#### What should you use this for:
+### Overriding the template characters
+
+By default the normal Golang template characters `{{` are used but sometimes the files you're working with containing
+and you have to laboriously escape them. 
+
+You can provide the special key `_spiro_delimiters_` in your spec file in order to override them:
+
+```yaml 
+_spiro_delimiters_: 
+  - "<<<"
+  - ">>>"
+```
+
+### What should you use this for:
 
 - Does your team have a template project that gets copied and modified by hand? Why not use this!
 

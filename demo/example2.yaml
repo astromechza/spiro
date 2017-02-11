@@ -1,0 +1,5 @@
+name: ExampleTwo
+
+_spiro_delimeters_: 
+    - "<<<"
+    - ">>>"
