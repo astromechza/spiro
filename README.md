@@ -1,6 +1,6 @@
 # `spiro` - a project template runner
 
-Spiro is an template structure generator that uses Golangs text/template library. It accepts both single files as well 
+Spiro is an template structure generator that uses Golangs text/template library. It accepts both single files as well
 as directory trees as input and will interpret any template calls found inside the files and the file/directory names.
 
 The rule-set is probably a bit complex to display here, but the following links are useful:
@@ -8,21 +8,21 @@ The rule-set is probably a bit complex to display here, but the following links 
 - https://golang.org/pkg/text/template
 - https://gohugo.io/templates/go-templates/
 
-The only additional rule is the rule that controls whether a file or directory is processed or not. If a file name is 
-templated like `{{ if blah }}filename.txt{{ end }}` then that file will only be processed _if_ the name evaluates to a 
+The only additional rule is the rule that controls whether a file or directory is processed or not. If a file name is
+templated like `{{ if blah }}filename.txt{{ end }}` then that file will only be processed _if_ the name evaluates to a
 non-empty string.
 
-The contents of a file will only be treated as templated if the file name has a `.templated` suffix. If 
+The contents of a file will only be treated as templated if the file name has a `.templated` suffix. If
 it does, the contents will be evaluated and the `.templated` suffix will be removed.
 
-Templating _inside_ the file is evaluated after any template in the file name. So if you want an optional file that has 
+Templating _inside_ the file is evaluated after any template in the file name. So if you want an optional file that has
 templated content you'll need to use a name like `{{ if blah }}filename.txt.templated{{ end }}`. If the `.templated`
 declaration is outside the condition the behaviour should be similar but is probably not the convention.
 
 Some additional template functions are supplied:
 
 - 'title': capitalise string
-- 'upper': convert string to upper case 
+- 'upper': convert string to upper case
 - 'lower': convert string to lower case
 - 'now': return current time object (time.Time)
 
@@ -35,7 +35,7 @@ You have a file on disk called `{{ lower .projectname }}.md.templated` with the 
 ```
 # Heading for {{ .projectname }}
 
-This project was started on {{ now.Format "2006-01-02" }} by {{ .author }}. 
+This project was started on {{ now.Format "2006-01-02" }} by {{ .author }}.
 ```
 
 And if you feed it the following spec JSON:
@@ -47,12 +47,12 @@ And if you feed it the following spec JSON:
 }
 ```
 
-You'll end up with a file called `helloworld.md` containing: 
+You'll end up with a file called `helloworld.md` containing:
 
 ```
 # Heading for HelloWorld
 
-This project was started on 2017-02-11 by Joe Soap. 
+This project was started on 2017-02-11 by Joe Soap.
 ```
 
 #### What should you use this for:
@@ -64,7 +64,7 @@ This project was started on 2017-02-11 by Joe Soap.
 A demo exists in the `/demo` directory. Run it as follows:
 
 ```
-$ rm -rfv demo/output/project 
+$ rm -rfv demo/output/project
 
 $ ./spiro demo/project demo/spec.json demo/output
 Processing 'demo/project/' -> 'demo/output/project/'
@@ -75,14 +75,14 @@ Processing 'demo/project/{{.subdir}}-thing/' -> 'demo/output/project/Elephant-th
 Processing 'demo/project/{{.subdir}}-thing/noop' -> 'demo/output/project/Elephant-thing/noop'
 Processing 'demo/project/{{.subdir}}-thing/{{.subfile.name}}.{{.subfile.type}}' -> 'demo/output/project/Elephant-thing/snake.xml'
 
-$ find demo/project
-demo/project
-demo/project/demo-{{upper .animal}}.templated
-demo/project/{{ if .x }}dontskip.txt{{ end }}
-demo/project/{{ if not .x }}skipthis.txt{{ end }}
-demo/project/{{.subdir}}-thing
-demo/project/{{.subdir}}-thing/noop
-demo/project/{{.subdir}}-thing/{{.subfile.name}}.{{.subfile.type}}
+$ find demo/output
+demo/output
+demo/output/project
+demo/output/project/demo-BEAR
+demo/output/project/dontskip.txt
+demo/output/project/Elephant-thing
+demo/output/project/Elephant-thing/noop
+demo/output/project/Elephant-thing/snake.xml
 ```
 
 ## Download
