@@ -28,6 +28,33 @@ Some additional template functions are supplied:
 
 The spec file should be in JSON form and will be passed to each template invocation.
 
+### Basic example of features:
+
+You have a file on disk called `{{ lower .projectname }}.md.templated` with the following content:
+
+```
+# Heading for {{ .projectname }}
+
+This project was started on {{ now.Format "2006-01-02" }} by {{ .author }}. 
+```
+
+And if you feed it the following spec JSON:
+
+```json
+{
+    "projectname": "HelloWorld",
+    "author": "Joe Soap"
+}
+```
+
+You'll end up with a file called `helloworld.md` containing: 
+
+```
+# Heading for HelloWorld
+
+This project was started on 2017-02-11 by Joe Soap. 
+```
+
 #### What should you use this for:
 
 - Does your team have a template project that gets copied and modified by hand? Why not use this!
