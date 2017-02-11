@@ -70,32 +70,32 @@ _spiro_delimiters_:
 
 ### What should you use this for:
 
-- Does your team have a template project that gets copied and modified by hand? Why not use this!
+- Does your team have a template project that gets copied and modified by hand? Use spiro!
 
 ## Demo
 
-A demo exists in the `/demo` directory. Run it as follows:
+Some demos exist in the `/demo` directory. Run them as follows:
 
 ```
 $ rm -rfv demo/output/project
 
-$ ./spiro demo/project demo/spec.json demo/output
-Processing 'demo/project/' -> 'demo/output/project/'
-Processing 'demo/project/demo-{{upper .animal}}.templated' -> 'demo/output/project/demo-BEAR'
-Processing 'demo/project/{{ if .x }}dontskip.txt{{ end }}' -> 'demo/output/project/dontskip.txt'
-Skipping 'demo/project/{{ if not .x }}skipthis.txt{{ end }}' since the name evaluated to ''
-Processing 'demo/project/{{.subdir}}-thing/' -> 'demo/output/project/Elephant-thing/'
-Processing 'demo/project/{{.subdir}}-thing/noop' -> 'demo/output/project/Elephant-thing/noop'
-Processing 'demo/project/{{.subdir}}-thing/{{.subfile.name}}.{{.subfile.type}}' -> 'demo/output/project/Elephant-thing/snake.xml'
+$ ./spiro demo/example1 demo/example1.yml demo/output 
+Processing 'demo/example1/' -> 'demo/output/example1/'
+Processing 'demo/example1/demo-{{upper .animal}}.templated' -> 'demo/output/example1/demo-BEAR'
+Processing 'demo/example1/{{ if .x }}dontskip.txt{{ end }}' -> 'demo/output/example1/dontskip.txt'
+Skipping 'demo/example1/{{ if not .x }}skipthis.txt{{ end }}' since the name evaluated to ''
+Processing 'demo/example1/{{.subdir}}-thing/' -> 'demo/output/example1/Elephant-thing/'
+Processing 'demo/example1/{{.subdir}}-thing/noop' -> 'demo/output/example1/Elephant-thing/noop'
+Processing 'demo/example1/{{.subdir}}-thing/{{.subfile.name}}.{{.subfile.type}}' -> 'demo/output/example1/Elephant-thing/snake.xml'
 
-$ find demo/output
+$ find demo/output 
 demo/output
-demo/output/project
-demo/output/project/demo-BEAR
-demo/output/project/dontskip.txt
-demo/output/project/Elephant-thing
-demo/output/project/Elephant-thing/noop
-demo/output/project/Elephant-thing/snake.xml
+demo/output/example1
+demo/output/example1/demo-BEAR
+demo/output/example1/dontskip.txt
+demo/output/example1/Elephant-thing
+demo/output/example1/Elephant-thing/noop
+demo/output/example1/Elephant-thing/snake.xml
 ```
 
 ## Download

@@ -37,8 +37,9 @@ func (f *TemplateFactory) SetSpec(in *map[string]interface{}) error {
 				return nil
 			}
 		}
+		return fmt.Errorf("Overidding template delimeters with '%s' requires an array of two strings", SpecialDelimetersKey)
 	}
-	return fmt.Errorf("Overidding template delimeters with '%s' requires an array of two strings", SpecialDelimetersKey)
+	return nil
 }
 
 func (f *TemplateFactory) StringContainsTemplating(in string) bool {
