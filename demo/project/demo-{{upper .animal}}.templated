@@ -1,3 +1,5 @@
+{{ .header }}
+
 # Demonstrating a templated file
 
 This file was generated on {{ now.Format "2006-01-02" }}.
