@@ -3,4 +3,4 @@
 /build/*
 /*.tgz
 /vendor/*/
-/demo/*
+/demo/output/

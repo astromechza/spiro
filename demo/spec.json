@@ -1,0 +1,9 @@
+{
+    "subdir": "Elephant",
+    "subfile": {
+        "name": "snake",
+        "type": "xml"
+    },
+    "animal": "Bear",
+    "x": true
+}

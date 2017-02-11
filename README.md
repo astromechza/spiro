@@ -8,6 +8,17 @@ The rule-set is probably a bit complex to display here, but the following links 
 - https://golang.org/pkg/text/template
 - https://gohugo.io/templates/go-templates/
 
+The only additional rule is the rule that controls whether a file or directory is processed or not. If a file name is 
+templated like `{{ if blah }}filename.txt{{ end }}` then that file will only be processed _if_ the name evaluates to a 
+non-empty string.
+
+The contents of a file will only be treated as templated if the file name has a `.templated` suffix. If 
+it does, the contents will be evaluated and the `.templated` suffix will be removed.
+
+Templating _inside_ the file is evaluated after any template in the file name. So if you want an optional file that has 
+templated content you'll need to use a name like `{{ if blah }}filename.txt.templated{{ end }}`. If the `.templated`
+declaration is outside the condition the behaviour should be similar but is probably not the convention.
+
 Some additional template functions are supplied:
 
 - 'title': capitalise string
@@ -16,9 +27,6 @@ Some additional template functions are supplied:
 - 'now': return current time object (time.Time)
 
 The spec file should be in JSON form and will be passed to each template invocation.
-
-**Important**: the contents of a file will only be treated as templated if the file name has a `.templated` suffix. If 
-it does, the contents will be evaluated and the `.templated` suffix will be removed.
 
 #### What should you use this for:
 

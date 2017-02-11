@@ -91,16 +91,22 @@ func isTemplatedFile(name string) bool {
 }
 
 func processDir(templateString string, spec *map[string]interface{}, outputDir string, funcMap *template.FuncMap) error {
-	base := path.Base(templateString)
-	if isTemplatedName(base) {
+	fromBase := path.Base(templateString)
+	toBase := fromBase
+	if isTemplatedName(fromBase) {
 		var err error
-		base, err = doTemplate(base, spec, funcMap)
+		toBase, err = doTemplate(fromBase, spec, funcMap)
 		if err != nil {
 			return fmt.Errorf("Error while processing '%s': %s", templateString, err.Error())
 		}
 	}
+	toBase = strings.TrimSpace(toBase)
+	if len(toBase) == 0 {
+		fmt.Printf("Skipping '%s' since the name evaluated to ''\n", templateString)
+		return nil
+	}
 
-	newOutputDir := path.Join(outputDir, base)
+	newOutputDir := path.Join(outputDir, toBase)
 	fmt.Printf("Processing '%s/' -> '%s/'\n", templateString, newOutputDir)
 	if err := os.Mkdir(newOutputDir, 0755); err != nil && !os.IsExist(err) {
 		return fmt.Errorf("Error while processing '%s': %s", templateString, err.Error())
@@ -125,9 +131,18 @@ func processFile(templateString string, spec *map[string]interface{}, outputDir 
 			return fmt.Errorf("Error while processing '%s': %s", templateString, err.Error())
 		}
 	}
+	toBase = strings.TrimSpace(toBase)
+	if len(toBase) == 0 {
+		fmt.Printf("Skipping '%s' since the name evaluated to ''\n", templateString)
+		return nil
+	}
 
 	if isTemplatedFile(toBase) {
 		toBase = toBase[:len(toBase)-10]
+		if len(toBase) == 0 {
+			fmt.Printf("Skipping '%s' since the name evaluated to ''\n", templateString)
+			return nil
+		}
 		fmt.Printf("Processing '%s' -> '%s'\n", templateString, path.Join(outputDir, toBase))
 		inputBytes, err := ioutil.ReadFile(templateString)
 		if err != nil {
