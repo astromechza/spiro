@@ -12,6 +12,8 @@ import (
 	"strings"
 	"text/template"
 	"time"
+
+	"gopkg.in/yaml.v2"
 )
 
 const usageString = `
@@ -188,6 +190,29 @@ func getFuncMap() *template.FuncMap {
 	return &tm
 }
 
+func readSpec(specFile string) (*map[string]interface{}, error) {
+	specBytes, err := ioutil.ReadFile(specFile)
+	if err != nil {
+		return nil, fmt.Errorf("Could not read json spec file: %s", err.Error())
+	}
+	var spec map[string]interface{}
+	if strings.HasSuffix(specFile, ".json") {
+		err = json.Unmarshal(specBytes, &spec)
+		if err != nil {
+			return nil, fmt.Errorf("Could not parse json spec file: %s", err.Error())
+		}
+		return &spec, nil
+	} else if strings.HasSuffix(specFile, ".yaml") || strings.HasSuffix(specFile, ".yml") {
+		err = yaml.Unmarshal(specBytes, &spec)
+		if err != nil {
+			return nil, fmt.Errorf("Could not parse yaml spec file: %s", err.Error())
+		}
+		return &spec, nil
+	} else {
+		return nil, fmt.Errorf("I do not know how to parse the spec, expected .json, .yaml, or .yml")
+	}
+}
+
 func mainInner() error {
 
 	// first set up config flag options
@@ -240,17 +265,11 @@ func mainInner() error {
 		return fmt.Errorf("Output directory '%s' cannot be a file!", specFile)
 	}
 
-	specBytes, err := ioutil.ReadFile(specFile)
-	if err != nil {
-		return fmt.Errorf("Could not read json spec file: %s", err.Error())
+	if spec, err := readSpec(specFile); err != nil {
+		return err
+	} else {
+		return process(inputTemplate, spec, outputDirectory, getFuncMap())
 	}
-	var spec map[string]interface{}
-	err = json.Unmarshal(specBytes, &spec)
-	if err != nil {
-		return fmt.Errorf("Could not parse json spec file: %s", err.Error())
-	}
-
-	return process(inputTemplate, &spec, outputDirectory, getFuncMap())
 }
 
 func main() {

@@ -26,7 +26,7 @@ Some additional template functions are supplied:
 - 'lower': convert string to lower case
 - 'now': return current time object (time.Time)
 
-The spec file should be in JSON form and will be passed to each template invocation.
+The spec file should be in JSON or Yaml form and will be passed to each template invocation.
 
 ### Basic example of features:
 
@@ -94,14 +94,16 @@ If a binary is not available for your platform, you'll need to build one yoursel
 
 ## Development
 
-This project uses only one development time dependency:
+This project uses only two development time dependency:
 
+- `govendor`: for managing the `vendor/` directory
 - `govvv`: for embedding build versions and dates into the binaries
 
-You'll want to add it into your GOPATH using `go get`.
+You'll want to add these into your GOPATH using `go get`.
+
+Also, run `govendor sync` to synchronise your vendor folder once you've pulled the repository.
 
 ## Future features
 
 - More useful template functions (need feedback from users)
-- Allow yaml spec file
 - Syntax to split a single file into multiple
