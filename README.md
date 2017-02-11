@@ -42,13 +42,17 @@ $ rm -rfv demo/output/project
 $ ./spiro demo/project demo/spec.json demo/output
 Processing 'demo/project/' -> 'demo/output/project/'
 Processing 'demo/project/demo-{{upper .animal}}.templated' -> 'demo/output/project/demo-BEAR'
+Processing 'demo/project/{{ if .x }}dontskip.txt{{ end }}' -> 'demo/output/project/dontskip.txt'
+Skipping 'demo/project/{{ if not .x }}skipthis.txt{{ end }}' since the name evaluated to ''
 Processing 'demo/project/{{.subdir}}-thing/' -> 'demo/output/project/Elephant-thing/'
 Processing 'demo/project/{{.subdir}}-thing/noop' -> 'demo/output/project/Elephant-thing/noop'
 Processing 'demo/project/{{.subdir}}-thing/{{.subfile.name}}.{{.subfile.type}}' -> 'demo/output/project/Elephant-thing/snake.xml'
 
-$ find demo/project 
+$ find demo/project
 demo/project
 demo/project/demo-{{upper .animal}}.templated
+demo/project/{{ if .x }}dontskip.txt{{ end }}
+demo/project/{{ if not .x }}skipthis.txt{{ end }}
 demo/project/{{.subdir}}-thing
 demo/project/{{.subdir}}-thing/noop
 demo/project/{{.subdir}}-thing/{{.subfile.name}}.{{.subfile.type}}
