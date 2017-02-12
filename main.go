@@ -244,6 +244,9 @@ func mainInner() error {
 		tf.RegisterTemplateFunction("lower", strings.ToLower)
 		tf.RegisterTemplateFunction("upper", strings.ToUpper)
 		tf.RegisterTemplateFunction("now", time.Now)
+		tf.RegisterTemplateFunction("json", Jsonify)
+		tf.RegisterTemplateFunction("jsonindent", JsonifyIndent)
+		tf.RegisterTemplateFunction("unescape", Unescape)
 		return process(inputTemplate, spec, outputDirectory, tf)
 	}
 }

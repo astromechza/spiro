@@ -7,3 +7,5 @@ The content below should not have changed:
 But this should:
 
 `<<<.name>>>`
+
+<<< .data | jsonindent | unescape >>>

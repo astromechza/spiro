@@ -21,10 +21,13 @@ declaration is outside the condition the behaviour should be similar but is prob
 
 Some additional template functions are supplied:
 
-- 'title': capitalise string
-- 'upper': convert string to upper case
-- 'lower': convert string to lower case
-- 'now': return current time object (time.Time)
+- `title`: capitalise string
+- `upper`: convert string to upper case
+- `lower`: convert string to lower case
+- `now`: return current time object (time.Time)
+- `json`: output a structure as json (not indented)
+- `jsonindent`: output a structure as indented json 
+- `unescape`: unescape escaped html characters
 
 The spec file should be in JSON or Yaml form and will be passed to each template invocation.
 

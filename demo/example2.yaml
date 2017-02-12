@@ -1,5 +1,11 @@
 name: ExampleTwo
 
+data:
+  thing: "bob"
+  other: 
+    - stuff
+    - other
+
 _spiro_delimeters_: 
     - "<<<"
     - ">>>"
