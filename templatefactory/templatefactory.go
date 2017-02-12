@@ -8,7 +8,7 @@ import (
 	"strings"
 )
 
-const SpecialDelimetersKey = "_spiro_delimeters_"
+const SpecialDelimitersKey = "_spiro_delimiters_"
 
 type TemplateFactory struct {
 	funcMap    template.FuncMap
@@ -27,7 +27,7 @@ func NewTemplateFactory() *TemplateFactory {
 
 func (f *TemplateFactory) SetSpec(in *map[string]interface{}) error {
 	f.spec = in
-	if delims, ok := (*in)[SpecialDelimetersKey]; ok {
+	if delims, ok := (*in)[SpecialDelimitersKey]; ok {
 		s := reflect.ValueOf(delims)
 		if s.Kind() == reflect.Slice && s.Len() == 2 {
 			var sok, eok bool
@@ -37,7 +37,7 @@ func (f *TemplateFactory) SetSpec(in *map[string]interface{}) error {
 				return nil
 			}
 		}
-		return fmt.Errorf("Overidding template delimeters with '%s' requires an array of two strings", SpecialDelimetersKey)
+		return fmt.Errorf("Overidding template delimiters with '%s' requires an array of two strings", SpecialDelimitersKey)
 	}
 	return nil
 }

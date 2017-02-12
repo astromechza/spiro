@@ -6,6 +6,6 @@ data:
     - stuff
     - other
 
-_spiro_delimeters_: 
+_spiro_delimiters_: 
     - "<<<"
     - ">>>"
