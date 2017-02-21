@@ -131,19 +131,27 @@ func processFile(templateString string, spec *map[string]interface{}, outputDir 
 		fmt.Printf("Processing '%s' -> '%s'\n", templateString, path.Join(outputDir, toBase))
 		inputBytes, err := ioutil.ReadFile(templateString)
 		if err != nil {
-			return fmt.Errorf("Error while processing '%s': %s", templateString, err.Error())
+			return fmt.Errorf("Error while reading '%s': %s", templateString, err.Error())
 		}
 		outputBytes, err := tf.Render(string(inputBytes))
 		if err != nil {
-			return fmt.Errorf("Error while processing '%s': %s", templateString, err.Error())
+			return fmt.Errorf("Error while rendering template for '%s': %s", templateString, err.Error())
 		}
 		if err := ioutil.WriteFile(path.Join(outputDir, toBase), []byte(outputBytes), 0644); err != nil {
-			return fmt.Errorf("Error while processing '%s': %s", templateString, err.Error())
+			return fmt.Errorf("Error while writing file bytes for '%s': %s", templateString, err.Error())
 		}
 	} else {
 		fmt.Printf("Processing '%s' -> '%s'\n", templateString, path.Join(outputDir, toBase))
-		return copyFileContents(templateString, path.Join(outputDir, toBase))
+		if err := copyFileContents(templateString, path.Join(outputDir, toBase)); err != nil {
+			return fmt.Errorf("Error while copying file bytes for '%s': %s", templateString, err.Error())
+		}
 	}
+
+	info, _ := os.Stat(templateString)
+	if err := os.Chmod(path.Join(outputDir, toBase), info.Mode()); err != nil {
+		return fmt.Errorf("Error while writing file permissions for '%s': %s", templateString, err.Error())
+	}
+
 	return nil
 }
 

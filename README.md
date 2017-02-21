@@ -31,6 +31,8 @@ Some additional template functions are supplied:
 
 The spec file should be in JSON or Yaml form and will be passed to each template invocation.
 
+Permission bits for any files, including `.templated` ones, **will** be copied to the destination files.
+
 ### Basic example of features:
 
 You have a file on disk called `{{ lower .projectname }}.md.templated` with the following content:
