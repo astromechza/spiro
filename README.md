@@ -73,9 +73,21 @@ _spiro_delimiters_:
   - ">>>"
 ```
 
-### What should you use this for:
+### Enforcing a `spiro` version 
 
-- Does your team have a template project that gets copied and modified by hand? Use spiro!
+Sometimes new features are added to Spiro which are not supported by earlier versions. Sometimes templates rely on these
+features. By specifying a `_spiro_min_version_` in your spec file, an error will be thrown if an earlier version of
+`spiro` is used to build the template.
+
+The version rules work as follows:
+
+- 3 numbers are allowed (`major.minor.patch`)
+- `X.Y` == `X.Y.0` and `X` == `X.0.0`
+- `X.Z` >= `X.0`
+
+### What should you use this project for:
+
+- Does your team have a template project that gets copied and modified by hand? Use `spiro`!
 
 ## Demo
 
@@ -103,7 +115,7 @@ demo/output/example1/Elephant-thing/noop
 demo/output/example1/Elephant-thing/snake.xml
 ```
 
-## Download
+## Download & Installation
 
 The best option is to download the latest binaries from the [releases page](https://github.com/AstromechZA/spiro/releases).
 Extract the one for your platform and put it in any directory where you have access.

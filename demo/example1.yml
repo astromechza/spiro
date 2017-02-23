@@ -5,3 +5,5 @@ subfile:
 animal: Bear 
 x: true
 header: "json requires\nnewlines!"
+
+_spiro_min_version_: 1.4

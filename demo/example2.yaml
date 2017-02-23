@@ -9,3 +9,5 @@ data:
 _spiro_delimiters_: 
     - "<<<"
     - ">>>"
+
+_spiro_min_version_: 1.3

@@ -32,6 +32,12 @@ unset GOOS
 unset GOARCH
 govvv build $GO_PROJECT
 
+# do some tests
+rm -rfv demo/output/*
+./spiro demo/example1 demo/example1.yml demo/output 
+rm -rfv demo/output/*
+./spiro demo/example2 demo/example2.yaml demo/output 
+
 # build for mac
 buildbinary darwin amd64
 
