@@ -8,6 +8,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path"
+	"strconv"
 	"strings"
 	"time"
 
@@ -189,6 +190,46 @@ func readSpec(specFile string) (*map[string]interface{}, error) {
 	}
 }
 
+// Build an integer from a version string. The version string can contain 3 numbers and each number can be a maximum
+// of 999. 1.2.3 -> 100200300.
+func buildVersionInt(versionString string) (uint64, error) {
+	parts := strings.Split(versionString, ".")
+	var value uint64
+	for index := 0; index < 3; index++ {
+		if len(parts) > index {
+			v, err := strconv.Atoi(parts[index])
+			if v < 0 {
+				v = 0
+			} else if v > 999 {
+				v = 999
+			}
+			if err != nil {
+				return value, fmt.Errorf("Could not parse version part %s in %s", parts[index], versionString)
+			}
+			value += uint64(v)
+		}
+		value *= 1000
+	}
+	return value, nil
+}
+
+// This function compares the current version to the one in the spec file. If the running version is too low, return
+// an error. The version numbers are compared as integers.
+func checkVersionIfNecessary(spec *map[string]interface{}) error {
+	if minVersion, ok := (*spec)["_spiro_min_version_"]; ok {
+		if minVersionString, ok := minVersion.(string); ok {
+			if minVersionValue, err := buildVersionInt(minVersionString); err != nil {
+				return err
+			} else if currentVersionValue, err := buildVersionInt(Version); err != nil {
+				return err
+			} else if currentVersionValue < minVersionValue {
+				return fmt.Errorf("Spiro template lists minimum version %s but you're using %s!", minVersionString, Version)
+			}
+		}
+	}
+	return nil
+}
+
 func mainInner() error {
 
 	// first set up config flag options
@@ -242,6 +283,8 @@ func mainInner() error {
 	}
 
 	if spec, err := readSpec(specFile); err != nil {
+		return err
+	} else if err := checkVersionIfNecessary(spec); err != nil {
 		return err
 	} else {
 		tf := templatefactory.NewTemplateFactory()
