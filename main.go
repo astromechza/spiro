@@ -26,13 +26,6 @@ The rule-set is probably a bit complex to display here, but the following links 
 - https://golang.org/pkg/text/template
 - https://gohugo.io/templates/go-templates/
 
-Some additional template functions are supplied:
-
-- 'title': capitalise string
-- 'upper': convert string to upper case 
-- 'lower': convert string to lower case
-- 'now': return current time object (time.Time)
-
 See the project homepage for more documentation: https://github.com/AstromechZA/spiro
 
 The spec file should be in JSON or Yaml form and will be passed to each template invocation.
@@ -44,7 +37,7 @@ const logoImage = `
   _________      .__               
  /   _____/_____ |__|______  ____  
  \_____  \\____ \|  \_  __ \/  _ \ 
- /        \  |_> >  ||  | \(  <_> )
+ /        \  |_) |  ||  | \(  (_) )
 /_______  /   __/|__||__|   \____/ 
         \/|__|               
 `
