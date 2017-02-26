@@ -298,6 +298,8 @@ func mainInner() error {
 		tf.RegisterTemplateFunction("json", Jsonify)
 		tf.RegisterTemplateFunction("jsonindent", JsonifyIndent)
 		tf.RegisterTemplateFunction("unescape", Unescape)
+		tf.RegisterTemplateFunction("stringreplace", StringReplace)
+		tf.RegisterTemplateFunction("regexreplace", RegexReplace)
 		return process(inputTemplate, spec, outputDirectory, tf)
 	}
 }

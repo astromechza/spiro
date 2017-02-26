@@ -21,13 +21,15 @@ declaration is outside the condition the behaviour should be similar but is prob
 
 Some additional template functions are supplied:
 
-- `title`: capitalise string
-- `upper`: convert string to upper case
-- `lower`: convert string to lower case
-- `now`: return current time object (time.Time)
-- `json`: output a structure as json (not indented)
-- `jsonindent`: output a structure as indented json 
-- `unescape`: unescape escaped html characters
+- `title`: capitalise string `(string) -> (string)`
+- `upper`: convert string to upper case `(string) -> (string)`
+- `lower`: convert string to lower case `(string) -> (string)`
+- `now`: return current time object `() -> (time.Time)`
+- `json`: output a structure as json `(object) -> (string)`
+- `jsonindent`: output a structure as indented json `(object) -> (string)`
+- `unescape`: unescape escaped html characters `(string) -> (string)`
+- `stringreplace`: basic string replace `(subject, old, new) -> (string)`
+- `regexreplace`: regular expression based string replace `(subject, pattern, repl) -> (string)`
 
 The spec file should be in JSON or Yaml form and will be passed to each template invocation.
 
@@ -78,6 +80,10 @@ _spiro_delimiters_:
 Sometimes new features are added to Spiro which are not supported by earlier versions. Sometimes templates rely on these
 features. By specifying a `_spiro_min_version_` in your spec file, an error will be thrown if an earlier version of
 `spiro` is used to build the template.
+
+```yaml 
+_sprio_min_version_: 1.5 
+```
 
 The version rules work as follows:
 
