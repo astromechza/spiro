@@ -7,7 +7,7 @@ script:
 - "./make_official.sh"
 - "./spiro --help || true"
 - "./spiro -version"
-- "./run_demos"
+- "./run_demos.sh"
 before_deploy:
 - cd build && sha256sum spiro-* > build/SHA256SUMS
 deploy:
