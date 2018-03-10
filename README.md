@@ -31,7 +31,8 @@ Some additional template functions are supplied:
 - `stringreplace`: basic string replace `(subject, old, new) -> (string)`
 - `regexreplace`: regular expression based string replace `(subject, pattern, repl) -> (string)`
 
-The spec file should be in JSON or Yaml form and will be passed to each template invocation.
+The spec file should be in JSON or Yaml form and will be passed to each template invocation. The specfile can be "-" to
+indicate that YAML should be read from stdin.
 
 Permission bits for any files, including `.templated` ones, **will** be copied to the destination files.
 
@@ -65,24 +66,24 @@ This project was started on 2017-02-11 by Joe Soap.
 ### Overriding the template characters
 
 By default the normal Golang template characters `{{` are used but sometimes the files you're working with containing
-and you have to laboriously escape them. 
+and you have to laboriously escape them.
 
 You can provide the special key `_spiro_delimiters_` in your spec file in order to override them:
 
-```yaml 
-_spiro_delimiters_: 
+```yaml
+_spiro_delimiters_:
   - "<<<"
   - ">>>"
 ```
 
-### Enforcing a `spiro` version 
+### Enforcing a `spiro` version
 
 Sometimes new features are added to Spiro which are not supported by earlier versions. Sometimes templates rely on these
 features. By specifying a `_spiro_min_version_` in your spec file, an error will be thrown if an earlier version of
 `spiro` is used to build the template.
 
-```yaml 
-_sprio_min_version_: 1.5 
+```yaml
+_sprio_min_version_: 1.5
 ```
 
 The version rules work as follows:
@@ -102,7 +103,7 @@ Some demos exist in the `/demo` directory. Run them as follows:
 ```
 $ rm -rfv demo/output/project
 
-$ ./spiro demo/example1 demo/example1.yml demo/output 
+$ ./spiro demo/example1 demo/example1.yml demo/output
 Processing 'demo/example1/' -> 'demo/output/example1/'
 Processing 'demo/example1/demo-{{upper .animal}}.templated' -> 'demo/output/example1/demo-BEAR'
 Processing 'demo/example1/{{ if .x }}dontskip.txt{{ end }}' -> 'demo/output/example1/dontskip.txt'
@@ -111,7 +112,7 @@ Processing 'demo/example1/{{.subdir}}-thing/' -> 'demo/output/example1/Elephant-
 Processing 'demo/example1/{{.subdir}}-thing/noop' -> 'demo/output/example1/Elephant-thing/noop'
 Processing 'demo/example1/{{.subdir}}-thing/{{.subfile.name}}.{{.subfile.type}}' -> 'demo/output/example1/Elephant-thing/snake.xml'
 
-$ find demo/output 
+$ find demo/output
 demo/output
 demo/output/example1
 demo/output/example1/demo-BEAR
@@ -127,6 +128,17 @@ The best option is to download the latest binaries from the [releases page](http
 Extract the one for your platform and put it in any directory where you have access.
 
 If a binary is not available for your platform, you'll need to build one yourself.
+
+## Changelog
+
+
+**v1.7**
+
+- Allow spec to be read from stdin when `-` is given ([#5](https://github.com/AstromechZA/spiro/issues/5))
+
+**v1.6.0**
+
+- ...
 
 ## Development
 

@@ -8,17 +8,18 @@ import (
 	"io/ioutil"
 	"os"
 	"path"
+	"regexp"
 	"strconv"
 	"strings"
 	"time"
 
-	"gopkg.in/yaml.v2"
+	yaml "gopkg.in/yaml.v2"
 
 	"github.com/AstromechZA/spiro/templatefactory"
 )
 
 const usageString = `
-Spiro is an template structure generator that uses Golangs text/template library. It accepts both single files as well 
+Spiro is an template structure generator that uses Golangs text/template library. It accepts both single files as well
 as directory trees as input and will interpret any template calls found inside the files and the file/directory names.
 
 The rule-set is probably a bit complex to display here, but the following links are useful:
@@ -28,24 +29,23 @@ The rule-set is probably a bit complex to display here, but the following links 
 
 See the project homepage for more documentation: https://github.com/AstromechZA/spiro
 
-The spec file should be in JSON or Yaml form and will be passed to each template invocation.
+The spec file should be in JSON or YAML form and will be passed to each template invocation. The specfile can be "-" to
+indicate that YAML should be read from stdin.
 
 $ spiro [options] {input template} {spec file} {output directory}
 `
 
 const logoImage = `
-  _________      .__               
- /   _____/_____ |__|______  ____  
- \_____  \\____ \|  \_  __ \/  _ \ 
+  _________      .__
+ /   _____/_____ |__|______  ____
+ \_____  \\____ \|  \_  __ \/  _ \
  /        \  |_) |  ||  | \(  (_) )
-/_______  /   __/|__||__|   \____/ 
-        \/|__|               
+/_______  /   __/|__||__|   \____/
+        \/|__|
 `
 
+// Version is a combination of version information (tag/commit/date/etc)
 var Version = "<unofficial build>"
-var GitCommit = "<commit unknown>"
-var GitState = "<changes unknown>"
-var BuildDate = "<no date>"
 
 func copyFileContents(src, dst string) error {
 	in, err := os.Open(src)
@@ -91,7 +91,10 @@ func processDir(templateString string, spec *map[string]interface{}, outputDir s
 		return fmt.Errorf("Error while processing '%s': %s", templateString, err.Error())
 	}
 
-	items, _ := ioutil.ReadDir(templateString)
+	items, err := ioutil.ReadDir(templateString)
+	if err != nil {
+		return fmt.Errorf("Error while reading '%s': %s", templateString, err.Error())
+	}
 	for _, item := range items {
 		if err := process(path.Join(templateString, item.Name()), spec, newOutputDir, tf); err != nil {
 			return err
@@ -141,7 +144,10 @@ func processFile(templateString string, spec *map[string]interface{}, outputDir 
 		}
 	}
 
-	info, _ := os.Stat(templateString)
+	info, err := os.Stat(templateString)
+	if err != nil {
+		return fmt.Errorf("Error while checking file permissions for '%s': %s", templateString, err.Error())
+	}
 	if err := os.Chmod(path.Join(outputDir, toBase), info.Mode()); err != nil {
 		return fmt.Errorf("Error while writing file permissions for '%s': %s", templateString, err.Error())
 	}
@@ -161,19 +167,27 @@ func process(templateString string, spec *map[string]interface{}, outputDir stri
 }
 
 func readSpec(specFile string) (*map[string]interface{}, error) {
-	specBytes, err := ioutil.ReadFile(specFile)
-	if err != nil {
-		return nil, fmt.Errorf("Could not read json spec file: %s", err.Error())
+	var f *os.File
+	var err error
+	if specFile == "-" {
+		f = os.Stdin
+	} else {
+		f, err = os.Open(specFile)
+		if err != nil {
+			return nil, fmt.Errorf("Could not read spec file: %s", err.Error())
+		}
 	}
 	var spec map[string]interface{}
 	if strings.HasSuffix(specFile, ".json") {
-		err = json.Unmarshal(specBytes, &spec)
+		dec := json.NewDecoder(f)
+		err = dec.Decode(&spec)
 		if err != nil {
 			return nil, fmt.Errorf("Could not parse json spec file: %s", err.Error())
 		}
 		return &spec, nil
-	} else if strings.HasSuffix(specFile, ".yaml") || strings.HasSuffix(specFile, ".yml") {
-		err = yaml.Unmarshal(specBytes, &spec)
+	} else if specFile == "-" || strings.HasSuffix(specFile, ".yaml") || strings.HasSuffix(specFile, ".yml") {
+		dec := yaml.NewDecoder(f)
+		err = dec.Decode(&spec)
 		if err != nil {
 			return nil, fmt.Errorf("Could not parse yaml spec file: %s", err.Error())
 		}
@@ -211,9 +225,17 @@ func buildVersionInt(versionString string) (uint64, error) {
 func checkVersionIfNecessary(spec *map[string]interface{}) error {
 	if minVersion, ok := (*spec)["_spiro_min_version_"]; ok {
 		if minVersionString, ok := minVersion.(string); ok {
+
+			// extract 3 digit version from Version
+			match := regexp.MustCompile(`v(\d+\.\d+\.\d+)`).FindStringSubmatch(Version)
+			if match == nil {
+				return fmt.Errorf("You are running an unofficial build of Spiro: we cannot handle version matches")
+			}
+			currentVersion := match[1]
+
 			if minVersionValue, err := buildVersionInt(minVersionString); err != nil {
 				return err
-			} else if currentVersionValue, err := buildVersionInt(Version); err != nil {
+			} else if currentVersionValue, err := buildVersionInt(currentVersion); err != nil {
 				return err
 			} else if currentVersionValue < minVersionValue {
 				return fmt.Errorf("Spiro template lists minimum version %s but you're using %s!", minVersionString, Version)
@@ -238,7 +260,7 @@ func mainInner() error {
 
 	// do arg checking
 	if *versionFlag {
-		fmt.Printf("Version: %s (%s-%s) on %s \n", Version, GitCommit, GitState, BuildDate)
+		fmt.Printf("Version: %s\n", Version)
 		fmt.Println(logoImage)
 		fmt.Println("Project: github.com/AstromechZA/spiro")
 		return nil
@@ -258,7 +280,8 @@ func mainInner() error {
 		}
 		return fmt.Errorf("Input template '%s' cannot be read! (%s)", inputTemplate, err.Error())
 	}
-	if stat, err := os.Stat(specFile); err != nil {
+	if specFile == "-" {
+	} else if stat, err := os.Stat(specFile); err != nil {
 		if os.IsNotExist(err) {
 			return fmt.Errorf("Spec file '%s' does not exist!", specFile)
 		}
