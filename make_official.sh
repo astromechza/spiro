@@ -28,3 +28,6 @@ function buildbinary {
 buildbinary darwin amd64
 buildbinary linux amd64
 buildbinary windows amd64
+
+echo "Building local binary"
+go build -i -v -ldflags "-X \"main.Version=${VERSION}\""

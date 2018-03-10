@@ -4,14 +4,10 @@ go:
 script:
 - curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
 - dep ensure
-- go build
+- "./make_official.sh"
 - "./spiro --help || true"
 - "./spiro -version"
-- "./spiro demo/example1 demo/example1.yml demo/output"
-- find demo/output
-- rm -rfv demo/output/project
-- "./spiro demo/example1 demo/example1.yml demo/output"
-- find demo/output
+- "./run_demos"
 before_deploy:
 - cd build && sha256sum spiro-* > build/SHA256SUMS
 deploy:
