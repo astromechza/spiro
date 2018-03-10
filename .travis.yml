@@ -1,0 +1,30 @@
+language: go
+go:
+- 1.9
+script:
+- curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
+- dep ensure
+- go build
+- "./spiro --help || true"
+- "./spiro -version"
+- "./spiro demo/example1 demo/example1.yml demo/output"
+- find demo/output
+- rm -rfv demo/output
+- "./spiro demo/example1 demo/example1.yml demo/output"
+- find demo/output
+before_deploy:
+- cd build && sha256sum spiro-* > build/SHA256SUMS
+deploy:
+  provider: releases
+  api_key:
+    secure: FN9OISI0ol7JVo4Jm3cJAUVknESLACbD08EGw/OlnU7KO1I2Hsk/9L+0a34Ya/sxZvNtJxY4ggXEvMNAPpT4t2hwd9lmRP3hNiKp7GrcUM5AKBE1AGq73eyxtGLIYBHbe6G9yBiPT2sPmz8NkzqwVs/CroOQ6LKsnAssLIg+dzX8NpjBiNgKPHtGiC2U9pQeJzwsGUqQGbjrq7eDmLbSLR9zyhvAUUuaG1eMPSGY+9CEDvekbPxY3JXf3k40jP9FiEmo3l0aA8ppnViANFpJot+OSRyCYnXgrYOC0gHF+y/LZ6v1ewnYBIMeA0W39L+X4RoO8O6K9HTQKzqYWoxXJwuh86Pu2YZcNIM5x1o0D0oSO8oehps13myL6SFWgL6Wd8H7HpqR0HWlQ1KaihcR2Iw9hNZ4vOSlIDRYGRsgt1qNKv4iGCgQt7dHkUb9FGSxgUhvf37r9rIhEIAatTPK4s422sWbJKphqdvgBeaGYhj8kSfizgzl1sXBwrhdnmP1TdzASWWyjV8KsN7Jpjg2FhphNS//AFqKjExKgnqYtpba0niEvgXiWlEbimJjD0g4pRUCD+Do1PnpEgLkPaYR5ce8i2fj7C3sSn9JNrrBeedblglnnw2SwHAbKUumSvUcN1BeMxiX5F4RoClbTLDSsy+9QhuJIedPQDkjkIjaz6Q=
+  skip_cleanup: true
+  file:
+    - build/spiro-linux-amd64
+    - build/spiro-darwin-amd64
+    - build/spiro-windows-amd64
+    - build/SHA256SUMS
+  on:
+    repo: AstromechZA/spiro
+    tags: true
+    all_branches: false
