@@ -9,7 +9,7 @@ script:
 - "./spiro -version"
 - "./spiro demo/example1 demo/example1.yml demo/output"
 - find demo/output
-- rm -rfv demo/output
+- rm -rfv demo/output/project
 - "./spiro demo/example1 demo/example1.yml demo/output"
 - find demo/output
 before_deploy:
