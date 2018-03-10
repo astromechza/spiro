@@ -110,7 +110,7 @@ initOS
 
 # assemble expected release artifact name
 # you will also need to modify this pattern when adapting it to your project
-DOWNLOAD_BINARY="${BINARY_NAME}.${OS}.${ARCH}"
+DOWNLOAD_BINARY="${BINARY_NAME}-${OS}-${ARCH}"
 
 # add .exe if on windows
 if [ "${OS}" = "windows" ]; then
