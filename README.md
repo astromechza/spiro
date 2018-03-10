@@ -127,6 +127,12 @@ demo/output/example1/Elephant-thing/snake.xml
 The best option is to download the latest binaries from the [releases page](https://github.com/AstromechZA/spiro/releases).
 Extract the one for your platform and put it in any directory where you have access.
 
+Alternatively, use the install script:
+
+```
+$ curl https://raw.githubusercontent.com/AstromechZA/spiro/master/install.sh | sh
+```
+
 If a binary is not available for your platform, you'll need to build one yourself.
 
 ## Changelog
