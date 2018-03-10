@@ -9,7 +9,8 @@ script:
 - "./spiro -version"
 - "./run_demos.sh"
 before_deploy:
-- cd build && sha256sum spiro-* > SHA256SUMS
+- cd build && sha256sum spiro-* > SHA256SUMS && cd ..
+- find build
 deploy:
   provider: releases
   api_key:
