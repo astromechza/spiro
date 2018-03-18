@@ -1,12 +1,13 @@
 package main
 
 import (
-	"encoding/json"
+	"bytes"
 	"flag"
 	"fmt"
 	"io"
 	"io/ioutil"
 	"os"
+	"os/exec"
 	"path"
 	"regexp"
 	"strconv"
@@ -31,6 +32,9 @@ See the project homepage for more documentation: https://github.com/AstromechZA/
 
 The spec file should be in JSON or YAML form and will be passed to each template invocation. The specfile can be "-" to
 indicate that YAML should be read from stdin.
+
+You can use the -edit flag to edit the spec file in your native $EDITOR before passing it to the templating system.
+This is useful to avoid the overhead of having to copy and modify an existing source of truth spec file.
 
 $ spiro [options] {input template} {spec file} {output directory}
 `
@@ -166,35 +170,15 @@ func process(templateString string, spec *map[string]interface{}, outputDir stri
 	return processFile(templateString, spec, outputDir, tf)
 }
 
-func readSpec(specFile string) (*map[string]interface{}, error) {
-	var f *os.File
-	var err error
+func readSpecRaw(specFile string) ([]byte, error) {
 	if specFile == "-" {
-		f = os.Stdin
-	} else {
-		f, err = os.Open(specFile)
-		if err != nil {
-			return nil, fmt.Errorf("Could not read spec file: %s", err.Error())
-		}
+		return ioutil.ReadAll(os.Stdin)
 	}
-	var spec map[string]interface{}
-	if strings.HasSuffix(specFile, ".json") {
-		dec := json.NewDecoder(f)
-		err = dec.Decode(&spec)
-		if err != nil {
-			return nil, fmt.Errorf("Could not parse json spec file: %s", err.Error())
-		}
-		return &spec, nil
-	} else if specFile == "-" || strings.HasSuffix(specFile, ".yaml") || strings.HasSuffix(specFile, ".yml") {
-		dec := yaml.NewDecoder(f)
-		err = dec.Decode(&spec)
-		if err != nil {
-			return nil, fmt.Errorf("Could not parse yaml spec file: %s", err.Error())
-		}
-		return &spec, nil
-	} else {
-		return nil, fmt.Errorf("I do not know how to parse the spec, expected .json, .yaml, or .yml")
+	content, err := ioutil.ReadFile(specFile)
+	if err != nil {
+		return nil, fmt.Errorf("Could not read spec file: %s", err.Error())
 	}
+	return content, nil
 }
 
 // Build an integer from a version string. The version string can contain 3 numbers and each number can be a maximum
@@ -249,6 +233,7 @@ func mainInner() error {
 
 	// first set up config flag options
 	versionFlag := flag.Bool("version", false, "Print the version string")
+	editFlag := flag.Bool("edit", false, "Open the spec file in your $EDITOR before passing it on to the main routine")
 
 	// set a more verbose usage message.
 	flag.Usage = func() {
@@ -274,13 +259,16 @@ func mainInner() error {
 	specFile := flag.Arg(1)
 	outputDirectory := flag.Arg(2)
 
+	// ensure template files/dir exists
 	if _, err := os.Stat(inputTemplate); err != nil {
 		if os.IsNotExist(err) {
 			return fmt.Errorf("Input template '%s' does not exist!", inputTemplate)
 		}
 		return fmt.Errorf("Input template '%s' cannot be read! (%s)", inputTemplate, err.Error())
 	}
+
 	if specFile == "-" {
+		// DO NOTHING
 	} else if stat, err := os.Stat(specFile); err != nil {
 		if os.IsNotExist(err) {
 			return fmt.Errorf("Spec file '%s' does not exist!", specFile)
@@ -298,26 +286,85 @@ func mainInner() error {
 		return fmt.Errorf("Output directory '%s' cannot be a file!", specFile)
 	}
 
-	if spec, err := readSpec(specFile); err != nil {
+	specContents, err := readSpecRaw(specFile)
+	if err != nil {
 		return err
-	} else if err := checkVersionIfNecessary(spec); err != nil {
-		return err
-	} else {
-		tf := templatefactory.NewTemplateFactory()
-		if err := tf.SetSpec(spec); err != nil {
+	}
+
+	// TODO check and do edit here
+	if *editFlag {
+		editor := os.Getenv("EDITOR")
+		if editor == "" {
+			return fmt.Errorf("You specified --edit but no $EDITOR is available")
+		}
+
+		var tf *os.File
+		tf, err = ioutil.TempFile(os.TempDir(), "spiro")
+		defer os.Remove(tf.Name())
+		if err != nil {
+			return fmt.Errorf("Unable to setup temporary file for editting: %s", err)
+		}
+		if _, err = tf.Write(specContents); err != nil {
+			return fmt.Errorf("Failed to write bytes to temporary file: %s", err)
+		}
+		err = tf.Close()
+		if err != nil {
+			panic(err)
+		}
+
+		var fi os.FileInfo
+		fi, err = os.Stat(tf.Name())
+		if err != nil {
+			panic(err)
+		}
+		beforeTime := fi.ModTime()
+
+		cmd := exec.Command(editor, tf.Name())
+		cmd.Stdin = os.Stdin
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+		cmd.Env = os.Environ()
+		if err = cmd.Run(); err != nil {
+			return fmt.Errorf("Editor command failed: %s", err)
+		}
+
+		fi, err = os.Stat(tf.Name())
+		if err != nil {
+			panic(err)
+		}
+		afterTime := fi.ModTime()
+
+		if beforeTime == afterTime {
+			return fmt.Errorf("No save detected, you must save the file when using -edit")
+		}
+
+		specContents, err = readSpecRaw(tf.Name())
+		if err != nil {
 			return err
 		}
-		tf.RegisterTemplateFunction("title", strings.Title)
-		tf.RegisterTemplateFunction("lower", strings.ToLower)
-		tf.RegisterTemplateFunction("upper", strings.ToUpper)
-		tf.RegisterTemplateFunction("now", time.Now)
-		tf.RegisterTemplateFunction("json", Jsonify)
-		tf.RegisterTemplateFunction("jsonindent", JsonifyIndent)
-		tf.RegisterTemplateFunction("unescape", Unescape)
-		tf.RegisterTemplateFunction("stringreplace", StringReplace)
-		tf.RegisterTemplateFunction("regexreplace", RegexReplace)
-		return process(inputTemplate, spec, outputDirectory, tf)
 	}
+
+	var spec map[string]interface{}
+	dec := yaml.NewDecoder(bytes.NewReader(specContents))
+	err = dec.Decode(&spec)
+	if err != nil {
+		return fmt.Errorf("Could not parse spec file: %s", err.Error())
+	}
+
+	tf := templatefactory.NewTemplateFactory()
+	if err := tf.SetSpec(&spec); err != nil {
+		return err
+	}
+	tf.RegisterTemplateFunction("title", strings.Title)
+	tf.RegisterTemplateFunction("lower", strings.ToLower)
+	tf.RegisterTemplateFunction("upper", strings.ToUpper)
+	tf.RegisterTemplateFunction("now", time.Now)
+	tf.RegisterTemplateFunction("json", Jsonify)
+	tf.RegisterTemplateFunction("jsonindent", JsonifyIndent)
+	tf.RegisterTemplateFunction("unescape", Unescape)
+	tf.RegisterTemplateFunction("stringreplace", StringReplace)
+	tf.RegisterTemplateFunction("regexreplace", RegexReplace)
+	return process(inputTemplate, &spec, outputDirectory, tf)
 }
 
 func main() {
