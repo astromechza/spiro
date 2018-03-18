@@ -1,4 +1,4 @@
-# `spiro` - a project template runner
+# `spiro` - a project template generator
 
 ![travis ci badge](https://travis-ci.org/AstromechZA/spiro.svg?branch=master)
 
