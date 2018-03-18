@@ -4,16 +4,47 @@
 
 Spiro is an template structure generator that uses Golangs text/template library. It accepts both single files as well as directory trees as input and will interpret any template calls found inside the files and the file/directory names.
 
+#### Quick Example
+
+**{{ .name }}.txt.templated:**
+
+```
+{{ if .enabled }}x = {{ .x }}
+y = {{ .y }}
+{{ end }}
+Footer content. Generated at {{ now.Format "2006-01-02" }}
+```
+
+**spec.yaml**:
+
+```yaml
+name: example
+enabled: true
+x: 10
+y: hello world
+```
+
+Then you can execute `spiro '{{ .name }}.txt.templated' spec.yaml .` in order to generate a file called `example.txt` that contains:
+
+```
+x = 10
+y = hello world
+
+Footer content. Generated at 2018-03-18
+```
+
+---
+
 The rule-set is probably a bit complex to display here, but the following links are useful:
 
 - https://golang.org/pkg/text/template
 - https://gohugo.io/templates/go-templates/
 
-The only additional rule is the rule that controls whether a file or directory is processed or not. If a file name is templated like `{{ if blah }}filename.txt{{ end }}` then that file will only be processed _if_ the name evaluates to a non-empty string.
+The only additional rule is the rule that controls whether a file or directory is processed or not. If a file name is templated like `{{ if .blah }}filename.txt{{ end }}` then that file will only be processed _if_ the name evaluates to a non-empty string.
 
 The contents of a file will only be treated as templated if the file name has a `.templated` suffix. If it does, the contents will be evaluated and the `.templated` suffix will be removed.
 
-Templating _inside_ the file is evaluated after any template in the file name. So if you want an optional file that has templated content you'll need to use a name like `{{ if blah }}filename.txt.templated{{ end }}`. If the `.templated` declaration is outside the condition the behaviour should be similar but is probably not the convention.
+Templating _inside_ the file is evaluated after any template in the file name. So if you want an optional file that has templated content you'll need to use a name like `{{ if .blah }}filename.txt.templated{{ end }}`. If the `.templated` declaration is outside the condition the behaviour should be similar but is probably not the convention.
 
 Some additional template functions are supplied:
 

@@ -1,5 +1,4 @@
 /spiro
 /.vscode
 /build/*
-/*.tgz
-demo/output
+demos/output/*

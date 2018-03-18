@@ -1,0 +1,4 @@
+{{ if .enabled }}x = {{ .x }}
+y = {{ .y }}
+{{ end }}
+Footer content. Generated at {{ now.Format "2006-01-02" }}

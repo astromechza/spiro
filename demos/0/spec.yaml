@@ -1,0 +1,4 @@
+name: example
+enabled: true
+x: 10
+y: hello world

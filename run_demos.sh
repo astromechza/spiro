@@ -2,17 +2,19 @@
 
 set -e
 
-mkdir demo/output
-./spiro demo/example1 demo/example1.yml demo/output
-find demo/output
-rm -rfv demo/output
+rm -rfv demos/output/0
+rm -rfv demos/output/1
+rm -rfv demos/output/2
+rm -rfv demos/output/3
 
-mkdir demo/output
-./spiro demo/example2 demo/example2.yaml demo/output
-find demo/output
-rm -rfv demo/output
+./spiro demos/0 demos/0/spec.yaml demos/output
+find demos/output
 
-mkdir demo/output
-echo "x: 1" | ./spiro demo/example3 - demo/output
-find demo/output
-rm -rfv demo/output
+./spiro demos/1 demos/1/spec.yaml demos/output
+find demos/output
+
+./spiro demos/2 demos/2/spec.yaml demos/output
+find demos/output
+
+echo "x: 1" | ./spiro demos/3 - demos/output
+find demos/output

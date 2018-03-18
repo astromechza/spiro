@@ -1,8 +1,8 @@
 subdir: Elephant
 subfile:
-    name: snake 
+    name: snake
     type: xml
-animal: Bear 
+animal: Bear
 x: true
 header: "json requires\nnewlines!"
 
