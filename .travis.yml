@@ -2,8 +2,6 @@ language: go
 go:
 - 1.9
 script:
-- curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
-- dep ensure
 - "./make_official.sh"
 - "./spiro --help || true"
 - "./spiro -version"
