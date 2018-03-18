@@ -1,23 +1,19 @@
 # `spiro` - a project template runner
 
-Spiro is an template structure generator that uses Golangs text/template library. It accepts both single files as well
-as directory trees as input and will interpret any template calls found inside the files and the file/directory names.
+![travis ci badge](https://travis-ci.org/AstromechZA/spiro.svg?branch=master)
+
+Spiro is an template structure generator that uses Golangs text/template library. It accepts both single files as well as directory trees as input and will interpret any template calls found inside the files and the file/directory names.
 
 The rule-set is probably a bit complex to display here, but the following links are useful:
 
 - https://golang.org/pkg/text/template
 - https://gohugo.io/templates/go-templates/
 
-The only additional rule is the rule that controls whether a file or directory is processed or not. If a file name is
-templated like `{{ if blah }}filename.txt{{ end }}` then that file will only be processed _if_ the name evaluates to a
-non-empty string.
+The only additional rule is the rule that controls whether a file or directory is processed or not. If a file name is templated like `{{ if blah }}filename.txt{{ end }}` then that file will only be processed _if_ the name evaluates to a non-empty string.
 
-The contents of a file will only be treated as templated if the file name has a `.templated` suffix. If
-it does, the contents will be evaluated and the `.templated` suffix will be removed.
+The contents of a file will only be treated as templated if the file name has a `.templated` suffix. If it does, the contents will be evaluated and the `.templated` suffix will be removed.
 
-Templating _inside_ the file is evaluated after any template in the file name. So if you want an optional file that has
-templated content you'll need to use a name like `{{ if blah }}filename.txt.templated{{ end }}`. If the `.templated`
-declaration is outside the condition the behaviour should be similar but is probably not the convention.
+Templating _inside_ the file is evaluated after any template in the file name. So if you want an optional file that has templated content you'll need to use a name like `{{ if blah }}filename.txt.templated{{ end }}`. If the `.templated` declaration is outside the condition the behaviour should be similar but is probably not the convention.
 
 Some additional template functions are supplied:
 
@@ -31,8 +27,7 @@ Some additional template functions are supplied:
 - `stringreplace`: basic string replace `(subject, old, new) -> (string)`
 - `regexreplace`: regular expression based string replace `(subject, pattern, repl) -> (string)`
 
-The spec file should be in JSON or Yaml form and will be passed to each template invocation. The specfile can be "-" to
-indicate that YAML should be read from stdin.
+The spec file should be in JSON or Yaml form and will be passed to each template invocation. The specfile can be "-" to indicate that YAML should be read from stdin.
 
 Permission bits for any files, including `.templated` ones, **will** be copied to the destination files.
 
@@ -65,8 +60,7 @@ This project was started on 2017-02-11 by Joe Soap.
 
 ### Overriding the template characters
 
-By default the normal Golang template characters `{{` are used but sometimes the files you're working with containing
-and you have to laboriously escape them.
+By default the normal Golang template characters `{{` are used but sometimes the files you're working with containing and you have to laboriously escape them.
 
 You can provide the special key `_spiro_delimiters_` in your spec file in order to override them:
 
@@ -78,9 +72,7 @@ _spiro_delimiters_:
 
 ### Enforcing a `spiro` version
 
-Sometimes new features are added to Spiro which are not supported by earlier versions. Sometimes templates rely on these
-features. By specifying a `_spiro_min_version_` in your spec file, an error will be thrown if an earlier version of
-`spiro` is used to build the template.
+Sometimes new features are added to Spiro which are not supported by earlier versions. Sometimes templates rely on these features. By specifying a `_spiro_min_version_` in your spec file, an error will be thrown if an earlier version of `spiro` is used to build the template.
 
 ```yaml
 _sprio_min_version_: 1.5
@@ -124,10 +116,9 @@ demo/output/example1/Elephant-thing/snake.xml
 
 ## Download & Installation
 
-The best option is to download the latest binaries from the [releases page](https://github.com/AstromechZA/spiro/releases).
-Extract the one for your platform and put it in any directory where you have access.
+The best option is to download the latest binaries from the [releases page](https://github.com/AstromechZA/spiro/releases). Extract the one for your platform and put it in any directory where you have access.
 
-Alternatively, use the install script:
+Alternatively, use the install script which will do this for you:
 
 ```
 $ curl https://raw.githubusercontent.com/AstromechZA/spiro/master/install.sh | sh
@@ -137,6 +128,9 @@ If a binary is not available for your platform, you'll need to build one yoursel
 
 ## Changelog
 
+**v1.8**
+
+- Added `-edit` option to the CLI
 
 **v1.7**
 
@@ -145,17 +139,6 @@ If a binary is not available for your platform, you'll need to build one yoursel
 **v1.6.0**
 
 - ...
-
-## Development
-
-This project uses only two development time dependency:
-
-- `govendor`: for managing the `vendor/` directory
-- `govvv`: for embedding build versions and dates into the binaries
-
-You'll want to add these into your GOPATH using `go get`.
-
-Also, run `govendor sync` to synchronise your vendor folder once you've pulled the repository.
 
 ## Future features
 
