@@ -46,3 +46,6 @@ func RegexReplace(subj string, pattern string, repl string) string {
 	re := regexp.MustCompile(pattern)
 	return re.ReplaceAllString(subj, repl)
 }
+func Add(a int, b int) int {
+	r
+}
