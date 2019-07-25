@@ -364,7 +364,7 @@ func mainInner() error {
 	tf.RegisterTemplateFunction("unescape", Unescape)
 	tf.RegisterTemplateFunction("stringreplace", StringReplace)
 	tf.RegisterTemplateFunction("regexreplace", RegexReplace)
-	tf.RegisterTemplateFunction("add", A)
+	tf.RegisterTemplateFunction("add", Add)
 	return process(inputTemplate, &spec, outputDirectory, tf)
 }
 
