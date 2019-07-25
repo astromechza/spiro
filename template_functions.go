@@ -47,5 +47,5 @@ func RegexReplace(subj string, pattern string, repl string) string {
 	return re.ReplaceAllString(subj, repl)
 }
 func Add(a int, b int) int {
-	r
+	return a + b
 }
