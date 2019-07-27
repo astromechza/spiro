@@ -1,6 +1,6 @@
 language: go
 go:
-- 1.9
+- 1.11
 script:
 - "./make_official.sh"
 - "./spiro --help || true"
@@ -20,6 +20,6 @@ deploy:
     - build/spiro-windows-amd64
     - build/SHA256SUMS
   on:
-    repo: AstromechZA/spiro
+    repo: astromechza/spiro
     tags: true
     all_branches: false
