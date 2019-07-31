@@ -1,6 +1,6 @@
 language: go
 go:
-- 1.9
+- 1.11
 script:
 - "./make_official.sh"
 - "./spiro --help || true"
@@ -12,7 +12,7 @@ before_deploy:
 deploy:
   provider: releases
   api_key:
-    secure: FN9OISI0ol7JVo4Jm3cJAUVknESLACbD08EGw/OlnU7KO1I2Hsk/9L+0a34Ya/sxZvNtJxY4ggXEvMNAPpT4t2hwd9lmRP3hNiKp7GrcUM5AKBE1AGq73eyxtGLIYBHbe6G9yBiPT2sPmz8NkzqwVs/CroOQ6LKsnAssLIg+dzX8NpjBiNgKPHtGiC2U9pQeJzwsGUqQGbjrq7eDmLbSLR9zyhvAUUuaG1eMPSGY+9CEDvekbPxY3JXf3k40jP9FiEmo3l0aA8ppnViANFpJot+OSRyCYnXgrYOC0gHF+y/LZ6v1ewnYBIMeA0W39L+X4RoO8O6K9HTQKzqYWoxXJwuh86Pu2YZcNIM5x1o0D0oSO8oehps13myL6SFWgL6Wd8H7HpqR0HWlQ1KaihcR2Iw9hNZ4vOSlIDRYGRsgt1qNKv4iGCgQt7dHkUb9FGSxgUhvf37r9rIhEIAatTPK4s422sWbJKphqdvgBeaGYhj8kSfizgzl1sXBwrhdnmP1TdzASWWyjV8KsN7Jpjg2FhphNS//AFqKjExKgnqYtpba0niEvgXiWlEbimJjD0g4pRUCD+Do1PnpEgLkPaYR5ce8i2fj7C3sSn9JNrrBeedblglnnw2SwHAbKUumSvUcN1BeMxiX5F4RoClbTLDSsy+9QhuJIedPQDkjkIjaz6Q=
+    secure: upEmtnnuVemZuXkjiyclscNm9RD+2F3Pffrdmvg32/FqFvCAeS9ioWOu+dqknGvo7yITsHTvyoX547OD8lzkcc+G6BWBXG0wEM8wzaZmrNZ9BqjuPpJ73dhzS016FMyKwJiLy2haKAIu75z5Jcnby/e28VpHQtT6aDKWvUnoa0dyq6kwX93JJLY1iVL3Nuo8PQR1zLdTwknMFoIkxCsUZD0y0xN4u7vmQqyoVameT/CppeArjRdzDDaBWhdZzGqUlxZxrs1f0ALA0LYKyGJjU0J65j0BRDnYrydIjrJgy+PyinPgcC97ifyBldIvqqkR47dJwuwuf+Olh709Il2l8AjJtluMBC8M9CPvMbUg4gSUG2SaIeue9vVo6JzFL/+gJrN1SFPIttRV3Ftbt9UxX8r+40SOLafyBKucoi+jlP4G/wPCeQdb+joybtKHLb6OWkpD/FaH1De8kpELCTNsZCKJAyUgRGk5uVrCVjlEbkZtu5TilBAK+0dsXySSE5QfqyrbZxOhJ+MzMSpMsQ5A8JR/8gIl8GKi2gmeXIPYfcxpmJkCrMqykccMdbB+TFzaXDbidJWgPxXR4nN7QYCVVzf7KUpsZguQ0UByzmhds8/A6MMM5Ml/KVBD35nBKtnhCQRgqd7ng9XAPnEgPCOIuSlE6Ebq9PEJ/n9HE6VWDmo=
   skip_cleanup: true
   file:
     - build/spiro-linux-amd64
@@ -20,6 +20,6 @@ deploy:
     - build/spiro-windows-amd64
     - build/SHA256SUMS
   on:
-    repo: AstromechZA/spiro
+    repo: astromechza/spiro
     tags: true
     all_branches: false

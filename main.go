@@ -16,7 +16,7 @@ import (
 
 	yaml "gopkg.in/yaml.v2"
 
-	"github.com/AstromechZA/spiro/templatefactory"
+	"github.com/astromechza/spiro/templatefactory"
 )
 
 const usageString = `
@@ -28,7 +28,7 @@ The rule-set is probably a bit complex to display here, but the following links 
 - https://golang.org/pkg/text/template
 - https://gohugo.io/templates/go-templates/
 
-See the project homepage for more documentation: https://github.com/AstromechZA/spiro
+See the project homepage for more documentation: https://github.com/astromechza/spiro
 
 The spec file should be in JSON or YAML form and will be passed to each template invocation. The specfile can be "-" to
 indicate that YAML should be read from stdin.
@@ -247,7 +247,7 @@ func mainInner() error {
 	if *versionFlag {
 		fmt.Printf("Version: %s\n", Version)
 		fmt.Println(logoImage)
-		fmt.Println("Project: github.com/AstromechZA/spiro")
+		fmt.Println("Project: github.com/astromechza/spiro")
 		return nil
 	}
 	if flag.NArg() != 3 {

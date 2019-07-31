@@ -19,7 +19,7 @@ set -e
 set -o pipefail
 
 # project urls
-PROJECT_URL="https://github.com/AstromechZA/spiro"
+PROJECT_URL="https://github.com/astromechza/spiro"
 RELEASES_URL="${PROJECT_URL}/releases"
 BINARY_NAME="spiro"
 

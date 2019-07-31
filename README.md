@@ -1,6 +1,6 @@
 # `spiro` - a project template generator
 
-![travis ci badge](https://travis-ci.org/AstromechZA/spiro.svg?branch=master)
+![travis ci badge](https://travis-ci.org/astromechza/spiro.svg?branch=master)
 
 Spiro is an template structure generator that uses Golangs text/template library. It accepts both single files as well as directory trees as input and will interpret any template calls found inside the files and the file/directory names.
 
@@ -148,12 +148,12 @@ demo/output/example1/Elephant-thing/snake.xml
 
 ## Download & Installation
 
-The best option is to download the latest binaries from the [releases page](https://github.com/AstromechZA/spiro/releases). Extract the one for your platform and put it in any directory where you have access.
+The best option is to download the latest binaries from the [releases page](https://github.com/astromechza/spiro/releases). Extract the one for your platform and put it in any directory where you have access.
 
 Alternatively, use the install script which will do this for you:
 
 ```
-$ curl https://raw.githubusercontent.com/AstromechZA/spiro/master/install.sh | sh
+$ curl https://raw.githubusercontent.com/astromechza/spiro/master/install.sh | sh
 ```
 
 If a binary is not available for your platform, you'll need to build one yourself.
@@ -166,7 +166,7 @@ If a binary is not available for your platform, you'll need to build one yoursel
 
 **v1.7**
 
-- Allow spec to be read from stdin when `-` is given ([#5](https://github.com/AstromechZA/spiro/issues/5))
+- Allow spec to be read from stdin when `-` is given ([#5](https://github.com/astromechza/spiro/issues/5))
 
 **v1.6.0**
 
