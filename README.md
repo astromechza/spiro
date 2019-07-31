@@ -57,6 +57,7 @@ Some additional template functions are supplied:
 - `unescape`: unescape escaped html characters `(string) -> (string)`
 - `stringreplace`: basic string replace `(subject, old, new) -> (string)`
 - `regexreplace`: regular expression based string replace `(subject, pattern, repl) -> (string)`
+- `add`: Calculate the sum of two numbers `(int, int) -> (int)`
 
 The spec file should be in JSON or Yaml form and will be passed to each template invocation. The specfile can be "-" to indicate that YAML should be read from stdin.
 
